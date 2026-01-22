@@ -1,0 +1,16 @@
+{
+  "name": "fluxinbounddock-web-server",
+  "version": "1.0.0",
+  "description": "Serveur web pour FluxInboundDock",
+  "main": "web-server.js",
+  "scripts": {
+    "start": "node web-server.js",
+    "dev": "nodemon web-server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

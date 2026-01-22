@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 FluxInboundDock - VERSION DE SÉCURITÉ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .security-container {
+            background: rgba(0,0,0,0.8);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .security-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #f1c40f;
+        }
+        .info-box {
+            background: rgba(52, 73, 94, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .button {
+            display: inline-block;
+            background: #27ae60;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #219a52;
+        }
+        .button.danger {
+            background: #e74c3c;
+        }
+        .button.danger:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="security-container">
+        <div class="security-icon">🔒</div>
+        <h1>VERSION DE SÉCURITÉ</h1>
+        <p><strong>FluxInboundDock - Sauvegarde du 7 novembre 2025</strong></p>
+        
+        <div class="info-box">
+            <h3>🛡️ Cette version contient :</h3>
+            <ul>
+                <li>✅ Dashboard professionnel complet</li>
+                <li>✅ Yard Manager avec import CSV</li>
+                <li>✅ Enrichissement croisé AFT/FMC → FluxDock</li>
+                <li>✅ Contrôle déplacement automatique</li>
+                <li>✅ Serveur multi-PC fonctionnel</li>
+                <li>✅ Toutes les fonctionnalités stables</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3>🚨 INSTRUCTIONS DE RESTAURATION :</h3>
+            <ol>
+                <li>Aller dans le dossier <code>BACKUPS/2025-11-07_VERSION_STABLE/</code></li>
+                <li>Copier <code>flux-sections-excel-style.html</code></li>
+                <li>Coller dans le dossier principal FluxInboundDock</li>
+                <li>Remplacer le fichier existant</li>
+                <li>Relancer le serveur</li>
+            </ol>
+        </div>
+        
+        <div class="info-box">
+            <h3>⚡ SCRIPTS AUTOMATIQUES :</h3>
+            <p><strong>FAIRE_BACKUP.ps1</strong> - Créer une nouvelle sauvegarde<br>
+            <strong>RESTAURER_BACKUP.ps1</strong> - Restaurer une sauvegarde</p>
+        </div>
+        
+        <p><strong>⚠️ CETTE VERSION NE DOIT JAMAIS ÊTRE MODIFIÉE !</strong></p>
+        <p>Elle sert de point de restauration en cas de problème.</p>
+        
+        <a href="javascript:history.back()" class="button">🔙 Retour</a>
+        <a href="../flux-sections-excel-style.html" class="button danger">🚀 Version de Travail</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚛 FluxDock Sections - Système VBA Complet</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        #app {
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .system-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .current-time {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* ===== NAVIGATION TABS ===== */
+        .tab-navigation {
+            background: white;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .tab-button:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .tab-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            min-height: calc(100vh - 100px);
+            padding: 20px;
+        }
+
+        .flux-dock-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .flux-dock-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .main-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .global-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #2c3e50;
+            border: 1px solid #e9ecef;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-info {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            background: #6c757d;
+            color: white;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section-container {
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .in-progress-section {
+            border-left: 6px solid #3498db;
+        }
+
+        .vrac-section {
+            border-left: 6px solid #f39c12;
+        }
+
+        .palettized-section {
+            border-left: 6px solid #9b59b6;
+        }
+
+        .done-section {
+            border-left: 6px solid #27ae60;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .section-title h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .section-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-grid {
+            background: #fafbfc;
+            padding: 20px;
+        }
+
+        /* ===== TABLE ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* ===== EDITABLE CELLS ===== */
+        .editable-cell {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .editable-cell:hover {
+            background: #e3f2fd;
+        }
+
+        .dropdown-select {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+            background: white;
+        }
+
+        .dropdown-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+            background: white;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52,152,219,0.2);
+        }
+
+        /* ===== LOCATION STATUS ===== */
+        .location-available {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: 1px solid #66bb6a;
+        }
+
+        .location-occupied {
+            background: #ffebee;
+            color: #c62828;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: 1px solid #ef5350;
+        }
+
+        .location-empty {
+            background: #fff3e0;
+            color: #f57f17;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            border: 1px solid #ffb74d;
+        }
+
+        /* ===== MOVE BUTTONS ===== */
+        .move-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .move-btn:hover {
+            background: #2980b9;
+        }
+
+        .move-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        /* ===== PRIORITY INDICATORS ===== */
+        .priority-high {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        /* ===== SYNC STATUS ===== */
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .sync-aft {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        .sync-fmc {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            border: 1px solid #ce93d8;
+        }
+
+        .sync-manual {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+        }
+
+        /* ===== MODAL ===== */
+        .move-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .move-modal {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .current-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .location-option {
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .location-option:hover {
+            border-color: #3498db;
+            background: #ebf3fd;
+        }
+
+        .location-option.occupied {
+            background: #ffebee;
+            border-color: #ef5350;
+            color: #c62828;
+            cursor: not-allowed;
+        }
+
+        .location-option.selected {
+            background: #e8f5e8;
+            border-color: #66bb6a;
+            color: #2e7d32;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification.warning {
+            border-left-color: #f39c12;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== NOUVELLES PAGES ===== */
+        .tab-content-wrapper {
+            padding: 20px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #6c757d;
+            font-size: 1.1rem;
+        }
+
+        .toolbar-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .data-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ===== SKYNET MONITORING ===== */
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .monitor-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+
+        .monitor-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .stats-grid .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .activity-log {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: #6c757d;
+            min-width: 80px;
+        }
+
+        .activity-message {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .location-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .location-name {
+            font-weight: bold;
+        }
+
+        .location-status-indicator.occupied {
+            color: #e74c3c;
+        }
+
+        .location-status-indicator.free {
+            color: #27ae60;
+        }
+
+        /* ===== PLANNING VRID ===== */
+        .planning-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .planning-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: relative;
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            min-width: 100px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .status-en-cours {
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .status-termine {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-retard {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .status-planifie {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        /* ===== MOVE OPTIONS ENHANCED ===== */
+        .move-options {
+            margin: 20px 0;
+        }
+
+        .move-destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .move-destination {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .move-destination:hover {
+            border-color: #3498db;
+            background: #ebf3fd;
+            transform: translateY(-2px);
+        }
+
+        .move-destination.selected {
+            border-color: #27ae60;
+            background: #e8f5e8;
+        }
+
+        .move-destination h4 {
+            margin: 0 0 5px 0;
+            color: #2c3e50;
+        }
+
+        .move-destination p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-toolbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .global-stats {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .move-modal {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- En-tête -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>🚛 FluxDock Sections - Système VBA Avancé</h1>
+                </div>
+                <div class="header-info">
+                    <span class="system-status">🟢 Synchronisation active</span>
+                    <span class="current-time">{{ currentTime }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation par onglets -->
+        <nav class="tab-navigation">
+            <button 
+                v-for="tab in tabs" 
+                :key="tab.id"
+                :class="['tab-button', { active: activeTab === tab.id }]"
+                @click="activeTab = tab.id"
+            >
+                <span class="tab-icon">{{ tab.icon }}</span>
+                {{ tab.name }}
+            </button>
+        </nav>
+
+        <!-- Contenu principal -->
+        <main class="main-content">
+            <!-- Onglet FluxDock Sections -->
+            <div v-if="activeTab === 'flux-sections'" class="tab-content-wrapper">
+            <div class="flux-dock-header">
+                <h2>📋 Gestion par Sections avec ListeQuaiInbound</h2>
+                <p>Système complet avec listes déroulantes, validation des mouvements et synchronisation AFT/FMC</p>
+                
+                <!-- Barre d'outils -->
+                <div class="main-toolbar">
+                    <div class="toolbar-left">
+                        <button class="btn btn-success" @click="synchroniserDonneesAFT">
+                            📥 Sync AFT
+                        </button>
+                        <button class="btn btn-info" @click="synchroniserDonneesFMC">
+                            📄 Sync FMC
+                        </button>
+                        <button class="btn btn-warning" @click="validerTousEmplacements">
+                            ✅ Valider Emplacements
+                        </button>
+                        <button class="btn btn-secondary" @click="remplirEmplacementsVides">
+                            🔄 Remplir Vides
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <div class="global-stats">
+                            <span class="stat-item">📦 Total: {{ getTotalVRID() }}</span>
+                            <span class="stat-item">⏳ En cours: {{ getSectionCount('IN PROGRESS') }}</span>
+                            <span class="stat-item">🔄 VRAC/PAL: {{ getSectionCount('VRAC') + getSectionCount('PALETTIZED') }}</span>
+                            <span class="stat-item">✅ Terminé: {{ getSectionCount('DONE') }}</span>
+                            <span class="stat-item">🚫 Vides: {{ getEmptyLocationsCount() }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section IN PROGRESS -->
+            <div class="section-container in-progress-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">🔄</span>
+                        <h3>IN PROGRESS ({{ getSectionCount('IN PROGRESS') }})</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-add" @click="ajouterLigneVide('IN PROGRESS')">
+                            ➕ Ajouter ligne vide
+                        </button>
+                        <button class="btn btn-small" @click="collapseSection('IN PROGRESS')">
+                            {{ collapsedSections['IN PROGRESS'] ? '📖' : '📕' }}
+                        </button>
+                    </div>
+                </div>
+                
+                <div v-if="!collapsedSections['IN PROGRESS']" class="section-grid">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>A - VRID</th>
+                                <th>B - Pallets</th>
+                                <th>C - BT</th>
+                                <th>D - Units</th>
+                                <th>E - SBD</th>
+                                <th>F - YMS Arrival</th>
+                                <th>G - Location (H)</th>
+                                <th>H - Remorques (I)</th>
+                                <th>I - FC Source (K)</th>
+                                <th>J - Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="vrid in getSectionData('IN PROGRESS')" :key="vrid.id">
+                                <td><strong>{{ vrid.vrid || '' }}</strong></td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.pallets" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.bt" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.units" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.sbd" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.ymsArrivalTime" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <select 
+                                        v-model="vrid.location" 
+                                        class="dropdown-select"
+                                        @change="onLocationChanged(vrid)"
+                                    >
+                                        <option value="">-- Sélectionner --</option>
+                                        <optgroup label="Quais (Q-25 à Q-35)">
+                                            <option 
+                                                v-for="quai in listeQuaiInbound.quais"
+                                                :key="quai"
+                                                :value="quai"
+                                                :disabled="isLocationOccupied(quai, vrid.id)"
+                                            >
+                                                {{ quai }} {{ isLocationOccupied(quai, vrid.id) ? '(Occupé)' : '' }}
+                                            </option>
+                                        </optgroup>
+                                        <optgroup label="Autres emplacements">
+                                            <option value="IB115">IB115</option>
+                                        </optgroup>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.remorques" 
+                                        type="text" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        placeholder="REM..."
+                                    >
+                                </td>
+                                <td>
+                                    <span :class="getSyncStatusClass(vrid.fcSource)">
+                                        {{ getSyncStatusIcon(vrid.fcSource) }} {{ vrid.fcSource || 'MANUEL' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button 
+                                        class="move-btn" 
+                                        @click="ouvrirModalDeplacement(vrid)"
+                                        :disabled="!vrid.vrid"
+                                    >
+                                        🚀 MOVE
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section VRAC -->
+            <div class="section-container vrac-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">📦</span>
+                        <h3>VRAC ({{ getSectionCount('VRAC') }})</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-add" @click="ajouterLigneVide('VRAC')">
+                            ➕ Ajouter ligne vide
+                        </button>
+                        <button class="btn btn-small" @click="collapseSection('VRAC')">
+                            {{ collapsedSections['VRAC'] ? '📖' : '📕' }}
+                        </button>
+                    </div>
+                </div>
+                
+                <div v-if="!collapsedSections['VRAC']" class="section-grid">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>A - VRID</th>
+                                <th>B - Pallets</th>
+                                <th>C - BT</th>
+                                <th>D - Units</th>
+                                <th>E - SBD</th>
+                                <th>F - YMS Arrival</th>
+                                <th>G - Location (H)</th>
+                                <th>H - Remorques (I)</th>
+                                <th>I - FC Source (K)</th>
+                                <th>J - Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="vrid in getSectionData('VRAC')" :key="vrid.id">
+                                <td><strong>{{ vrid.vrid || '' }}</strong></td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.pallets" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.bt" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.units" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.sbd" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.ymsArrivalTime" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <select 
+                                        v-model="vrid.location" 
+                                        class="dropdown-select"
+                                        @change="onLocationChanged(vrid)"
+                                    >
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="VRAC">VRAC</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.remorques" 
+                                        type="text" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        placeholder="REM..."
+                                    >
+                                </td>
+                                <td>
+                                    <span :class="getSyncStatusClass(vrid.fcSource)">
+                                        {{ getSyncStatusIcon(vrid.fcSource) }} {{ vrid.fcSource || 'MANUEL' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button 
+                                        class="move-btn" 
+                                        @click="ouvrirModalDeplacement(vrid)"
+                                        :disabled="!vrid.vrid"
+                                    >
+                                        🚀 MOVE
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section PALETTIZED -->
+            <div class="section-container palettized-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">🏗️</span>
+                        <h3>PALETTIZED ({{ getSectionCount('PALETTIZED') }})</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-add" @click="ajouterLigneVide('PALETTIZED')">
+                            ➕ Ajouter ligne vide
+                        </button>
+                        <button class="btn btn-small" @click="collapseSection('PALETTIZED')">
+                            {{ collapsedSections['PALETTIZED'] ? '📖' : '📕' }}
+                        </button>
+                    </div>
+                </div>
+                
+                <div v-if="!collapsedSections['PALETTIZED']" class="section-grid">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>A - VRID</th>
+                                <th>B - Pallets</th>
+                                <th>C - BT</th>
+                                <th>D - Units</th>
+                                <th>E - SBD</th>
+                                <th>F - YMS Arrival</th>
+                                <th>G - Location (H)</th>
+                                <th>H - Remorques (I)</th>
+                                <th>I - FC Source (K)</th>
+                                <th>J - Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="vrid in getSectionData('PALETTIZED')" :key="vrid.id">
+                                <td><strong>{{ vrid.vrid || '' }}</strong></td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.pallets" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.bt" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model.number="vrid.units" 
+                                        type="number" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        min="0"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.sbd" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.ymsArrivalTime" 
+                                        type="datetime-local" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                    >
+                                </td>
+                                <td>
+                                    <select 
+                                        v-model="vrid.location" 
+                                        class="dropdown-select"
+                                        @change="onLocationChanged(vrid)"
+                                    >
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="PALETTIZED">PALETTIZED</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input 
+                                        v-model="vrid.remorques" 
+                                        type="text" 
+                                        class="input-field"
+                                        @change="onDataChanged(vrid)"
+                                        placeholder="REM..."
+                                    >
+                                </td>
+                                <td>
+                                    <span :class="getSyncStatusClass(vrid.fcSource)">
+                                        {{ getSyncStatusIcon(vrid.fcSource) }} {{ vrid.fcSource || 'MANUEL' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button 
+                                        class="move-btn" 
+                                        @click="ouvrirModalDeplacement(vrid)"
+                                        :disabled="!vrid.vrid"
+                                    >
+                                        🚀 MOVE
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section DONE -->
+            <div class="section-container done-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <span class="section-icon">✅</span>
+                        <h3>DONE ({{ getSectionCount('DONE') }})</h3>
+                    </div>
+                    <div class="section-actions">
+                        <button class="btn btn-add" @click="ajouterLigneVide('DONE')">
+                            ➕ Ajouter ligne vide
+                        </button>
+                        <button class="btn btn-small" @click="collapseSection('DONE')">
+                            {{ collapsedSections['DONE'] ? '📖' : '📕' }}
+                        </button>
+                    </div>
+                </div>
+                
+                <div v-if="!collapsedSections['DONE']" class="section-grid">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>A - VRID</th>
+                                <th>B - Pallets</th>
+                                <th>C - BT</th>
+                                <th>D - Units</th>
+                                <th>E - SBD</th>
+                                <th>F - YMS Arrival</th>
+                                <th>G - Location (H)</th>
+                                <th>H - Remorques (I)</th>
+                                <th>I - FC Source (K)</th>
+                                <th>J - Terminé le</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="vrid in getSectionData('DONE')" :key="vrid.id">
+                                <td><strong>{{ vrid.vrid || '' }}</strong></td>
+                                <td>{{ vrid.pallets || '' }}</td>
+                                <td>{{ vrid.bt || '' }}</td>
+                                <td>{{ vrid.units ? vrid.units.toLocaleString() : '' }}</td>
+                                <td>{{ vrid.sbd ? formatDateTime(vrid.sbd) : '' }}</td>
+                                <td>{{ vrid.ymsArrivalTime ? formatDateTime(vrid.ymsArrivalTime) : '' }}</td>
+                                <td>
+                                    <select 
+                                        v-model="vrid.location" 
+                                        class="dropdown-select"
+                                        @change="onLocationChanged(vrid)"
+                                    >
+                                        <option value="">-- Sélectionner --</option>
+                                        <option value="DONE">DONE</option>
+                                    </select>
+                                </td>
+                                <td>{{ vrid.remorques || '' }}</td>
+                                <td>
+                                    <span :class="getSyncStatusClass(vrid.fcSource)">
+                                        {{ getSyncStatusIcon(vrid.fcSource) }} {{ vrid.fcSource || 'MANUEL' }}
+                                    </span>
+                                </td>
+                                <td>{{ vrid.completedAt ? formatDateTime(vrid.completedAt) : '' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal de déplacement -->
+            <div v-if="showMoveModal" class="move-modal-overlay" @click="fermerModalDeplacement">
+                <div class="move-modal" @click.stop>
+                    <div class="modal-header">
+                        <h3>🚀 Déplacer VRID: {{ selectedVRID?.vrid }}</h3>
+                        <button class="close-btn" @click="fermerModalDeplacement">✕</button>
+                    </div>
+                    
+                    <div class="modal-content">
+                        <div class="current-status">
+                            <strong>Statut actuel:</strong> {{ selectedVRID?.statut }}
+                            <br>
+                            <strong>Location actuelle:</strong> {{ selectedVRID?.location || 'Non assignée' }}
+                        </div>
+
+                        <div class="move-options">
+                            <h4>🎯 Sélectionner la destination:</h4>
+                            <div class="move-destination-grid">
+                                <div 
+                                    v-for="destination in getAvailableDestinations(selectedVRID?.statut)"
+                                    :key="destination.id"
+                                    :class="[
+                                        'move-destination',
+                                        { 'selected': selectedMoveDestination === destination.id }
+                                    ]"
+                                    @click="selectionnerDestination(destination.id)"
+                                >
+                                    <h4>{{ destination.icon }} {{ destination.name }}</h4>
+                                    <p>{{ destination.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="selectedMoveDestination === 'IN PROGRESS' && needsLocationSelection()">
+                            <h4>📍 Choisir l'emplacement (Q-25 à Q-35):</h4>
+                            <div class="location-grid">
+                                <div 
+                                    v-for="quai in listeQuaiInbound.quais"
+                                    :key="quai"
+                                    :class="[
+                                        'location-option',
+                                        { 
+                                            'occupied': isLocationOccupied(quai, selectedVRID?.id),
+                                            'selected': selectedMoveLocation === quai
+                                        }
+                                    ]"
+                                    @click="selectionnerEmplacement(quai)"
+                                >
+                                    {{ quai }}
+                                    <div v-if="isLocationOccupied(quai, selectedVRID?.id)" style="font-size: 0.8rem;">
+                                        Occupé
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="selectedMoveDestination && (selectedMoveLocation || !needsLocationSelection())" style="margin: 15px 0;">
+                            <strong>✅ Destination:</strong> {{ getDestinationName(selectedMoveDestination) }}
+                            <span v-if="selectedMoveLocation"> - {{ selectedMoveLocation }}</span>
+                        </div>
+
+                        <div v-if="moveValidationMessage" :class="['notification', moveValidationType]" style="position: relative; top: 0; right: 0; margin: 15px 0;">
+                            {{ moveValidationMessage }}
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button 
+                            class="btn btn-success" 
+                            @click="confirmerDeplacement" 
+                            :disabled="!canConfirmMove() || moveValidationType === 'error'"
+                        >
+                            ✅ Confirmer le Déplacement
+                        </button>
+                        <button class="btn btn-secondary" @click="fermerModalDeplacement">
+                            ❌ Annuler
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- Onglet AFT -->
+            <div v-if="activeTab === 'aft'" class="tab-content-wrapper">
+                <div class="page-header">
+                    <h2>📥 AFT - Advanced Freight Terminal</h2>
+                    <p>Gestion des données AFT avec import et synchronisation automatique</p>
+                </div>
+                
+                <div class="aft-content">
+                    <div class="toolbar-section">
+                        <button class="btn btn-success" @click="importerDonneesAFT">
+                            📥 Importer Données AFT
+                        </button>
+                        <button class="btn btn-info" @click="exporterDonneesAFT">
+                            📤 Exporter vers FluxDock
+                        </button>
+                        <button class="btn btn-warning" @click="actualiserAFT">
+                            🔄 Actualiser AFT
+                        </button>
+                    </div>
+
+                    <div class="data-section">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>VRID</th>
+                                    <th>Pallets</th>
+                                    <th>BT</th>
+                                    <th>Units</th>
+                                    <th>SBD</th>
+                                    <th>YMS Arrival</th>
+                                    <th>Remorques</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in donneesAFT" :key="item.vrid">
+                                    <td><strong>{{ item.vrid }}</strong></td>
+                                    <td>
+                                        <input v-model.number="item.pallets" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model.number="item.bt" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model.number="item.units" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.sbd" type="datetime-local" class="input-field">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.ymsArrivalTime" type="datetime-local" class="input-field">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.remorques" type="text" class="input-field">
+                                    </td>
+                                    <td>
+                                        <span class="sync-status sync-aft">📥 AFT</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-small" @click="envoyerVersFluxDock(item)">
+                                            ➡️ Envoyer
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet FMC -->
+            <div v-if="activeTab === 'fmc'" class="tab-content-wrapper">
+                <div class="page-header">
+                    <h2>📄 FMC - Fleet Management Center</h2>
+                    <p>Gestion centralisée des données FMC avec synchronisation</p>
+                </div>
+                
+                <div class="fmc-content">
+                    <div class="toolbar-section">
+                        <button class="btn btn-success" @click="importerDonneesFMC">
+                            📄 Importer Données FMC
+                        </button>
+                        <button class="btn btn-info" @click="exporterDonneesFMC">
+                            📤 Exporter vers FluxDock
+                        </button>
+                        <button class="btn btn-warning" @click="actualiserFMC">
+                            🔄 Actualiser FMC
+                        </button>
+                    </div>
+
+                    <div class="data-section">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>VRID</th>
+                                    <th>Pallets</th>
+                                    <th>BT</th>
+                                    <th>Units</th>
+                                    <th>SBD</th>
+                                    <th>YMS Arrival</th>
+                                    <th>Remorques</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in donneesFMC" :key="item.vrid">
+                                    <td><strong>{{ item.vrid }}</strong></td>
+                                    <td>
+                                        <input v-model.number="item.pallets" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model.number="item.bt" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model.number="item.units" type="number" class="input-field" min="0">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.sbd" type="datetime-local" class="input-field">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.ymsArrivalTime" type="datetime-local" class="input-field">
+                                    </td>
+                                    <td>
+                                        <input v-model="item.remorques" type="text" class="input-field">
+                                    </td>
+                                    <td>
+                                        <span class="sync-status sync-fmc">📄 FMC</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-small" @click="envoyerVersFluxDock(item)">
+                                            ➡️ Envoyer
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet Skynet -->
+            <div v-if="activeTab === 'skynet'" class="tab-content-wrapper">
+                <div class="page-header">
+                    <h2>🌐 Skynet - Surveillance Système</h2>
+                    <p>Monitoring en temps réel et contrôle avancé du système</p>
+                </div>
+                
+                <div class="skynet-content">
+                    <div class="monitoring-grid">
+                        <div class="monitor-card">
+                            <h3>📊 Statistiques Globales</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <span class="stat-label">Total VRID:</span>
+                                    <span class="stat-value">{{ getTotalVRID() }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">En cours:</span>
+                                    <span class="stat-value">{{ getSectionCount('IN PROGRESS') }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">VRAC:</span>
+                                    <span class="stat-value">{{ getSectionCount('VRAC') }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">PALETTIZED:</span>
+                                    <span class="stat-value">{{ getSectionCount('PALETTIZED') }}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">DONE:</span>
+                                    <span class="stat-value">{{ getSectionCount('DONE') }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monitor-card">
+                            <h3>🔄 Activité Système</h3>
+                            <div class="activity-log">
+                                <div v-for="activity in recentActivities" :key="activity.id" class="activity-item">
+                                    <span class="activity-time">{{ formatDateTime(activity.timestamp) }}</span>
+                                    <span class="activity-message">{{ activity.message }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monitor-card">
+                            <h3>📍 Emplacements</h3>
+                            <div class="location-status">
+                                <div v-for="quai in listeQuaiInbound.quais" :key="quai" class="location-item">
+                                    <span class="location-name">{{ quai }}</span>
+                                    <span :class="['location-status-indicator', isLocationOccupied(quai) ? 'occupied' : 'free']">
+                                        {{ isLocationOccupied(quai) ? '🔴 Occupé' : '🟢 Libre' }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Onglet VRID du jour AFT -->
+            <div v-if="activeTab === 'vrid-aft'" class="tab-content-wrapper">
+                <div class="page-header">
+                    <h2>📅 VRID du jour AFT</h2>
+                    <p>Suivi journalier des VRID AFT avec planning et statuts</p>
+                </div>
+                
+                <div class="vrid-jour-content">
+                    <div class="toolbar-section">
+                        <button class="btn btn-success" @click="chargerVRIDDuJour">
+                            📅 Charger VRID du jour
+                        </button>
+                        <button class="btn btn-info" @click="planifierVRID">
+                            📋 Planifier VRID
+                        </button>
+                        <button class="btn btn-warning" @click="exporterPlanning">
+                            📤 Exporter Planning
+                        </button>
+                    </div>
+
+                    <div class="planning-section">
+                        <h3>📋 Planning du {{ formatDate(new Date()) }}</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Heure</th>
+                                    <th>VRID</th>
+                                    <th>Pallets</th>
+                                    <th>Units</th>
+                                    <th>Location</th>
+                                    <th>Statut</th>
+                                    <th>Progression</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="planning in planningDuJour" :key="planning.id">
+                                    <td><strong>{{ formatTime(planning.heurePrevu) }}</strong></td>
+                                    <td>{{ planning.vrid }}</td>
+                                    <td>{{ planning.pallets }}</td>
+                                    <td>{{ planning.units?.toLocaleString() }}</td>
+                                    <td>{{ planning.location }}</td>
+                                    <td>
+                                        <span :class="getStatusClass(planning.statut)">
+                                            {{ getStatusIcon(planning.statut) }} {{ planning.statut }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" :style="{width: planning.progression + '%'}"></div>
+                                            <span class="progress-text">{{ planning.progression }}%</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-small" @click="mettreAJourProgression(planning)">
+                                            📊 MAJ
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Notifications -->
+        <div class="notifications">
+            <div 
+                v-for="notification in notifications" 
+                :key="notification.id"
+                :class="['notification', notification.type]"
+            >
+                {{ notification.message }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    currentTime: '',
+                    activeTab: 'flux-sections',
+                    
+                    // Navigation tabs
+                    tabs: [
+                        { id: 'flux-sections', name: 'FluxDock Sections', icon: '📋' },
+                        { id: 'aft', name: 'AFT', icon: '📥' },
+                        { id: 'fmc', name: 'FMC', icon: '📄' },
+                        { id: 'skynet', name: 'Skynet', icon: '🌐' },
+                        { id: 'vrid-aft', name: 'VRID du jour AFT', icon: '📅' }
+                    ],
+                    
+                    // Configuration ListeQuaiInbound (équivalent feuille 'Base')
+                    listeQuaiInbound: {
+                        quais: [
+                            'Q-25', 'Q-26', 'Q-27', 'Q-28', 'Q-29', 'Q-30',
+                            'Q-31', 'Q-32', 'Q-33', 'Q-34', 'Q-35'
+                        ],
+                        locations: ['VRAC', 'PALETTIZED', 'DONE', 'IB115']
+                    },
+
+                    // Données des sections avec lignes vides modifiables
+                    vridData: [
+                        // Lignes vides par défaut dans chaque section
+                        {
+                            id: 1,
+                            vrid: '',
+                            statut: 'IN PROGRESS',
+                            pallets: null,
+                            bt: null,
+                            units: null,
+                            sbd: '',
+                            ymsArrivalTime: '',
+                            location: '',
+                            remorques: '',
+                            fcSource: '',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 2,
+                            vrid: '',
+                            statut: 'VRAC',
+                            pallets: null,
+                            bt: null,
+                            units: null,
+                            sbd: '',
+                            ymsArrivalTime: '',
+                            location: '',
+                            remorques: '',
+                            fcSource: '',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 3,
+                            vrid: '',
+                            statut: 'PALETTIZED',
+                            pallets: null,
+                            bt: null,
+                            units: null,
+                            sbd: '',
+                            ymsArrivalTime: '',
+                            location: '',
+                            remorques: '',
+                            fcSource: '',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 4,
+                            vrid: '',
+                            statut: 'DONE',
+                            pallets: null,
+                            bt: null,
+                            units: null,
+                            sbd: '',
+                            ymsArrivalTime: '',
+                            location: '',
+                            remorques: '',
+                            fcSource: '',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        }
+                    ],
+
+                    collapsedSections: {
+                        'IN PROGRESS': false,
+                        'VRAC': false,
+                        'PALETTIZED': false,
+                        'DONE': false
+                    },
+
+                    // Modal de déplacement amélioré
+                    showMoveModal: false,
+                    selectedVRID: null,
+                    selectedMoveLocation: '',
+                    selectedMoveDestination: '',
+                    moveValidationMessage: '',
+                    moveValidationType: 'info',
+
+                    // Données simulées AFT/FMC pour synchronisation
+                    donneesAFT: [
+                        {
+                            vrid: 'AFT001',
+                            pallets: 20,
+                            bt: 4,
+                            units: 400,
+                            sbd: '2025-10-27T10:00',
+                            ymsArrivalTime: '2025-10-27T11:00',
+                            remorques: 'REM_AFT001'
+                        },
+                        {
+                            vrid: 'AFT002',
+                            pallets: 15,
+                            bt: 3,
+                            units: 300,
+                            sbd: '2025-10-27T11:00',
+                            ymsArrivalTime: '2025-10-27T12:00',
+                            remorques: 'REM_AFT002'
+                        }
+                    ],
+
+                    donneesFMC: [
+                        {
+                            vrid: 'FMC001',
+                            pallets: 35,
+                            bt: 7,
+                            units: 700,
+                            sbd: '2025-10-27T09:00',
+                            ymsArrivalTime: '2025-10-27T10:30',
+                            remorques: 'REM_FMC001'
+                        },
+                        {
+                            vrid: 'FMC002',
+                            pallets: 22,
+                            bt: 4,
+                            units: 440,
+                            sbd: '2025-10-27T12:00',
+                            ymsArrivalTime: '2025-10-27T13:30',
+                            remorques: 'REM_FMC002'
+                        }
+                    ],
+
+                    notifications: [],
+
+                    // Données pour activité Skynet
+                    recentActivities: [
+                        { id: 1, timestamp: new Date(), message: "VRID AFT001 ajouté en IN PROGRESS" },
+                        { id: 2, timestamp: new Date(Date.now() - 60000), message: "Synchronisation AFT effectuée" },
+                        { id: 3, timestamp: new Date(Date.now() - 120000), message: "Q-25 libéré par VR001" }
+                    ],
+
+                    // Planning du jour
+                    planningDuJour: [
+                        {
+                            id: 1,
+                            heurePrevu: '2025-10-28T08:00',
+                            vrid: 'AFT001',
+                            pallets: 25,
+                            units: 500,
+                            location: 'Q-25',
+                            statut: 'EN_COURS',
+                            progression: 75
+                        },
+                        {
+                            id: 2,
+                            heurePrevu: '2025-10-28T10:00',
+                            vrid: 'AFT002',
+                            pallets: 30,
+                            units: 600,
+                            location: 'Q-26',
+                            statut: 'PLANIFIE',
+                            progression: 0
+                        },
+                        {
+                            id: 3,
+                            heurePrevu: '2025-10-28T12:00',
+                            vrid: 'AFT003',
+                            pallets: 20,
+                            units: 400,
+                            location: 'Q-27',
+                            statut: 'TERMINE',
+                            progression: 100
+                        }
+                    ]
+                }
+            },
+
+            methods: {
+                // ===== GESTION DES SECTIONS =====
+                getSectionData(status) {
+                    return this.vridData.filter(vrid => vrid.statut === status)
+                },
+
+                getSectionCount(status) {
+                    return this.getSectionData(status).filter(vrid => vrid.vrid).length
+                },
+
+                getTotalVRID() {
+                    return this.vridData.filter(vrid => vrid.vrid).length
+                },
+
+                getEmptyLocationsCount() {
+                    return this.vridData.filter(vrid => !vrid.vrid).length
+                },
+
+                collapseSection(status) {
+                    this.collapsedSections[status] = !this.collapsedSections[status]
+                },
+
+                // ===== AJOUT DE LIGNES VIDES =====
+                ajouterLigneVide(statut) {
+                    const nouvelleLigne = {
+                        id: Date.now() + Math.random(),
+                        vrid: '',
+                        statut: statut,
+                        pallets: null,
+                        bt: null,
+                        units: null,
+                        sbd: '',
+                        ymsArrivalTime: '',
+                        location: '',
+                        remorques: '',
+                        fcSource: '',
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }
+                    
+                    this.vridData.push(nouvelleLigne)
+                    this.afficherNotification(`➕ Nouvelle ligne vide ajoutée en section ${statut}`, 'success')
+                },
+
+                // ===== GESTION DES DONNÉES =====
+                onDataChanged(vrid) {
+                    vrid.updatedAt = new Date()
+                    
+                    // Auto-génération VRID si données complètes
+                    if (!vrid.vrid && vrid.pallets && vrid.bt && vrid.units) {
+                        vrid.vrid = this.genererVRIDAutomatic(vrid.statut)
+                        this.afficherNotification(`🎯 VRID généré automatiquement: ${vrid.vrid}`, 'success')
+                    }
+                },
+
+                onLocationChanged(vrid) {
+                    // Validation de l'emplacement
+                    if (this.isLocationOccupied(vrid.location, vrid.id)) {
+                        this.afficherNotification(`❌ Emplacement ${vrid.location} déjà occupé!`, 'error')
+                        vrid.location = ''
+                        return
+                    }
+                    
+                    vrid.updatedAt = new Date()
+                    this.afficherNotification(`📍 Location mise à jour: ${vrid.location}`, 'info')
+                },
+
+                genererVRIDAutomatic(statut) {
+                    const prefixes = {
+                        'IN PROGRESS': 'IP',
+                        'VRAC': 'VR',
+                        'PALETTIZED': 'PL',
+                        'DONE': 'DN'
+                    }
+                    
+                    const prefix = prefixes[statut]
+                    const count = this.getSectionCount(statut) + 1
+                    return `${prefix}${String(count).padStart(3, '0')}`
+                },
+
+                // ===== VALIDATION DES EMPLACEMENTS =====
+                isLocationOccupied(location, excludeId = null) {
+                    if (!location) return false
+                    
+                    return this.vridData.some(vrid => 
+                        vrid.location === location && 
+                        vrid.id !== excludeId && 
+                        vrid.vrid // Seulement les lignes avec VRID
+                    )
+                },
+
+                validerTousEmplacements() {
+                    let conflicts = 0
+                    const locationMap = new Map()
+
+                    this.vridData.forEach(vrid => {
+                        if (vrid.location && vrid.vrid) {
+                            if (locationMap.has(vrid.location)) {
+                                conflicts++
+                            } else {
+                                locationMap.set(vrid.location, vrid.vrid)
+                            }
+                        }
+                    })
+
+                    if (conflicts > 0) {
+                        this.afficherNotification(`⚠️ ${conflicts} conflits d'emplacements détectés!`, 'warning')
+                    } else {
+                        this.afficherNotification(`✅ Tous les emplacements sont valides!`, 'success')
+                    }
+                },
+
+                // ===== SYSTÈME DE DÉPLACEMENT AMÉLIORÉ =====
+                ouvrirModalDeplacement(vrid) {
+                    this.selectedVRID = vrid
+                    this.showMoveModal = true
+                    this.selectedMoveLocation = ''
+                    this.selectedMoveDestination = ''
+                    this.moveValidationMessage = ''
+                    this.moveValidationType = 'info'
+                },
+
+                fermerModalDeplacement() {
+                    this.showMoveModal = false
+                    this.selectedVRID = null
+                    this.selectedMoveLocation = ''
+                    this.selectedMoveDestination = ''
+                    this.moveValidationMessage = ''
+                },
+
+                getAvailableDestinations(currentStatus) {
+                    const destinations = {
+                        'IN PROGRESS': [
+                            { id: 'VRAC', name: 'VRAC', icon: '📦', description: 'Déplacer vers la zone VRAC' },
+                            { id: 'PALETTIZED', name: 'PALETTIZED', icon: '🏗️', description: 'Palettiser directement' },
+                            { id: 'DONE', name: 'DONE', icon: '✅', description: 'Marquer comme terminé' }
+                        ],
+                        'VRAC': [
+                            { id: 'IN PROGRESS', name: 'IN PROGRESS', icon: '🔄', description: 'Retour en cours (choisir quai)' },
+                            { id: 'PALETTIZED', name: 'PALETTIZED', icon: '🏗️', description: 'Palettiser depuis VRAC' },
+                            { id: 'DONE', name: 'DONE', icon: '✅', description: 'Terminer depuis VRAC' }
+                        ],
+                        'PALETTIZED': [
+                            { id: 'IN PROGRESS', name: 'IN PROGRESS', icon: '🔄', description: 'Retour en cours (choisir quai)' },
+                            { id: 'VRAC', name: 'VRAC', icon: '📦', description: 'Retour en VRAC' },
+                            { id: 'DONE', name: 'DONE', icon: '✅', description: 'Terminer la palettisation' }
+                        ],
+                        'DONE': [
+                            { id: 'IN PROGRESS', name: 'IN PROGRESS', icon: '🔄', description: 'Rouvrir le VRID (choisir quai)' },
+                            { id: 'VRAC', name: 'VRAC', icon: '📦', description: 'Retour en VRAC' },
+                            { id: 'PALETTIZED', name: 'PALETTIZED', icon: '🏗️', description: 'Retour en palettisation' }
+                        ]
+                    }
+                    
+                    return destinations[currentStatus] || []
+                },
+
+                selectionnerDestination(destinationId) {
+                    this.selectedMoveDestination = destinationId
+                    this.selectedMoveLocation = ''
+                    
+                    if (!this.needsLocationSelection()) {
+                        this.moveValidationMessage = `✅ Destination ${destinationId} sélectionnée`
+                        this.moveValidationType = 'success'
+                    } else {
+                        this.moveValidationMessage = `📍 Sélectionnez maintenant l'emplacement pour ${destinationId}`
+                        this.moveValidationType = 'info'
+                    }
+                },
+
+                needsLocationSelection() {
+                    return this.selectedMoveDestination === 'IN PROGRESS'
+                },
+
+                getDestinationName(destinationId) {
+                    const names = {
+                        'IN PROGRESS': 'IN PROGRESS',
+                        'VRAC': 'VRAC',
+                        'PALETTIZED': 'PALETTIZED',
+                        'DONE': 'DONE'
+                    }
+                    return names[destinationId] || destinationId
+                },
+
+                canConfirmMove() {
+                    if (!this.selectedMoveDestination) return false
+                    if (this.needsLocationSelection() && !this.selectedMoveLocation) return false
+                    return true
+                },
+
+                selectionnerEmplacement(quai) {
+                    if (this.isLocationOccupied(quai, this.selectedVRID?.id)) {
+                        this.moveValidationMessage = `❌ Emplacement ${quai} déjà occupé!`
+                        this.moveValidationType = 'error'
+                        return
+                    }
+
+                    this.selectedMoveLocation = quai
+                    this.moveValidationMessage = `✅ Emplacement ${quai} disponible`
+                    this.moveValidationType = 'success'
+                },
+
+                confirmerDeplacement() {
+                    if (!this.canConfirmMove() || this.moveValidationType === 'error') {
+                        return
+                    }
+
+                    const oldStatus = this.selectedVRID.statut
+                    const oldLocation = this.selectedVRID.location
+
+                    // Mise à jour du VRID
+                    this.selectedVRID.statut = this.selectedMoveDestination
+                    
+                    if (this.selectedMoveLocation) {
+                        this.selectedVRID.location = this.selectedMoveLocation
+                    } else {
+                        // Pour destinations sans sélection de quai
+                        this.selectedVRID.location = this.selectedMoveDestination
+                    }
+                    
+                    this.selectedVRID.updatedAt = new Date()
+
+                    // Marquer comme terminé si DONE
+                    if (this.selectedMoveDestination === 'DONE') {
+                        this.selectedVRID.completedAt = new Date()
+                    }
+
+                    // Ajouter à l'activité Skynet
+                    this.ajouterActivite(`VRID ${this.selectedVRID.vrid} déplacé: ${oldStatus} → ${this.selectedMoveDestination}`)
+
+                    this.afficherNotification(
+                        `✅ ${this.selectedVRID.vrid} déplacé: ${oldStatus} → ${this.selectedMoveDestination}${this.selectedMoveLocation ? ' (' + this.selectedMoveLocation + ')' : ''}`,
+                        'success'
+                    )
+
+                    this.fermerModalDeplacement()
+                },
+
+                // ===== SYNCHRONISATION AFT/FMC =====
+                synchroniserDonneesAFT() {
+                    let synchronised = 0
+                    
+                    // Recherche des emplacements vides ou correspondances
+                    this.donneesAFT.forEach(aftData => {
+                        const emplacementVide = this.vridData.find(vrid => 
+                            !vrid.vrid && vrid.statut === 'IN PROGRESS'
+                        )
+                        
+                        if (emplacementVide) {
+                            // Remplissage automatique (équivalent ImporterInfosDepuisFMCV3)
+                            emplacementVide.vrid = aftData.vrid
+                            emplacementVide.pallets = aftData.pallets
+                            emplacementVide.bt = aftData.bt
+                            emplacementVide.units = aftData.units
+                            emplacementVide.sbd = aftData.sbd
+                            emplacementVide.ymsArrivalTime = aftData.ymsArrivalTime
+                            emplacementVide.remorques = aftData.remorques
+                            emplacementVide.fcSource = 'AFT'
+                            emplacementVide.updatedAt = new Date()
+                            
+                            synchronised++
+                        }
+                    })
+
+                    if (synchronised > 0) {
+                        this.afficherNotification(`📥 ${synchronised} lignes synchronisées depuis AFT`, 'success')
+                    } else {
+                        this.afficherNotification('ℹ️ Aucun emplacement vide disponible pour la synchronisation AFT', 'warning')
+                    }
+                },
+
+                synchroniserDonneesFMC() {
+                    let synchronised = 0
+                    
+                    // Recherche des emplacements vides ou correspondances
+                    this.donneesFMC.forEach(fmcData => {
+                        const emplacementVide = this.vridData.find(vrid => 
+                            !vrid.vrid && ['VRAC', 'PALETTIZED'].includes(vrid.statut)
+                        )
+                        
+                        if (emplacementVide) {
+                            // Remplissage automatique (équivalent getLocationsFromInbound)
+                            emplacementVide.vrid = fmcData.vrid
+                            emplacementVide.pallets = fmcData.pallets
+                            emplacementVide.bt = fmcData.bt
+                            emplacementVide.units = fmcData.units
+                            emplacementVide.sbd = fmcData.sbd
+                            emplacementVide.ymsArrivalTime = fmcData.ymsArrivalTime
+                            emplacementVide.remorques = fmcData.remorques
+                            emplacementVide.fcSource = 'FMC'
+                            emplacementVide.location = emplacementVide.statut
+                            emplacementVide.updatedAt = new Date()
+                            
+                            synchronised++
+                        }
+                    })
+
+                    if (synchronised > 0) {
+                        this.afficherNotification(`📄 ${synchronised} lignes synchronisées depuis FMC`, 'success')
+                    } else {
+                        this.afficherNotification('ℹ️ Aucun emplacement vide disponible pour la synchronisation FMC', 'warning')
+                    }
+                },
+
+                remplirEmplacementsVides() {
+                    const emplacementsVides = this.vridData.filter(vrid => !vrid.vrid)
+                    
+                    emplacementsVides.forEach(vrid => {
+                        // Attribution automatique selon les règles
+                        if (vrid.statut === 'IN PROGRESS') {
+                            // Recherche du premier quai disponible
+                            const quaiLibre = this.listeQuaiInbound.quais.find(quai => 
+                                !this.isLocationOccupied(quai, vrid.id)
+                            )
+                            if (quaiLibre) {
+                                vrid.location = quaiLibre
+                            }
+                        } else {
+                            // Attribution de la location par défaut selon le statut
+                            vrid.location = vrid.statut
+                        }
+                        
+                        vrid.updatedAt = new Date()
+                    })
+
+                    this.afficherNotification(`🔄 ${emplacementsVides.length} emplacements vides mis à jour`, 'info')
+                },
+
+                // ===== HELPERS D'AFFICHAGE =====
+                getSyncStatusClass(fcSource) {
+                    const classes = {
+                        'AFT': 'sync-status sync-aft',
+                        'FMC': 'sync-status sync-fmc',
+                        '': 'sync-status sync-manual'
+                    }
+                    return classes[fcSource] || 'sync-status sync-manual'
+                },
+
+                getSyncStatusIcon(fcSource) {
+                    const icons = {
+                        'AFT': '📥',
+                        'FMC': '📄',
+                        '': '✋'
+                    }
+                    return icons[fcSource] || '✋'
+                },
+
+                formatDateTime(dateTimeString) {
+                    if (!dateTimeString) return ''
+                    
+                    try {
+                        const date = new Date(dateTimeString)
+                        return date.toLocaleString('fr-FR')
+                    } catch (e) {
+                        return dateTimeString
+                    }
+                },
+
+                // ===== NOTIFICATIONS =====
+                afficherNotification(message, type = 'info') {
+                    const notification = {
+                        id: Date.now(),
+                        message,
+                        type
+                    }
+                    this.notifications.push(notification)
+                    
+                    setTimeout(() => {
+                        const index = this.notifications.findIndex(n => n.id === notification.id)
+                        if (index > -1) {
+                            this.notifications.splice(index, 1)
+                        }
+                    }, 5000)
+                },
+
+                // ===== NOUVELLES PAGES - MÉTHODES =====
+                
+                // AFT Methods
+                importerDonneesAFT() {
+                    // Simuler l'import de nouvelles données AFT
+                    const nouvellesDonnees = [
+                        {
+                            vrid: `AFT${String(this.donneesAFT.length + 1).padStart(3, '0')}`,
+                            pallets: Math.floor(Math.random() * 30) + 10,
+                            bt: Math.floor(Math.random() * 6) + 1,
+                            units: Math.floor(Math.random() * 500) + 200,
+                            sbd: new Date().toISOString().slice(0, 16),
+                            ymsArrivalTime: new Date(Date.now() + 3600000).toISOString().slice(0, 16),
+                            remorques: `REM_AFT${String(this.donneesAFT.length + 1).padStart(3, '0')}`
+                        }
+                    ]
+                    
+                    this.donneesAFT.push(...nouvellesDonnees)
+                    this.afficherNotification(`📥 ${nouvellesDonnees.length} nouvelles données AFT importées`, 'success')
+                },
+
+                exporterDonneesAFT() {
+                    this.synchroniserDonneesAFT()
+                    this.afficherNotification('📤 Données AFT exportées vers FluxDock', 'success')
+                },
+
+                actualiserAFT() {
+                    this.afficherNotification('🔄 Données AFT actualisées', 'info')
+                },
+
+                // FMC Methods
+                importerDonneesFMC() {
+                    const nouvellesDonnees = [
+                        {
+                            vrid: `FMC${String(this.donneesFMC.length + 1).padStart(3, '0')}`,
+                            pallets: Math.floor(Math.random() * 35) + 15,
+                            bt: Math.floor(Math.random() * 7) + 2,
+                            units: Math.floor(Math.random() * 600) + 300,
+                            sbd: new Date().toISOString().slice(0, 16),
+                            ymsArrivalTime: new Date(Date.now() + 7200000).toISOString().slice(0, 16),
+                            remorques: `REM_FMC${String(this.donneesFMC.length + 1).padStart(3, '0')}`
+                        }
+                    ]
+                    
+                    this.donneesFMC.push(...nouvellesDonnees)
+                    this.afficherNotification(`📄 ${nouvellesDonnees.length} nouvelles données FMC importées`, 'success')
+                },
+
+                exporterDonneesFMC() {
+                    this.synchroniserDonneesFMC()
+                    this.afficherNotification('📤 Données FMC exportées vers FluxDock', 'success')
+                },
+
+                actualiserFMC() {
+                    this.afficherNotification('🔄 Données FMC actualisées', 'info')
+                },
+
+                envoyerVersFluxDock(item) {
+                    // Rechercher une ligne vide dans FluxDock
+                    const ligneVide = this.vridData.find(vrid => !vrid.vrid)
+                    
+                    if (ligneVide) {
+                        ligneVide.vrid = item.vrid
+                        ligneVide.pallets = item.pallets
+                        ligneVide.bt = item.bt
+                        ligneVide.units = item.units
+                        ligneVide.sbd = item.sbd
+                        ligneVide.ymsArrivalTime = item.ymsArrivalTime
+                        ligneVide.remorques = item.remorques
+                        ligneVide.fcSource = this.activeTab === 'aft' ? 'AFT' : 'FMC'
+                        ligneVide.location = ligneVide.statut === 'IN PROGRESS' ? '' : ligneVide.statut
+                        ligneVide.updatedAt = new Date()
+                        
+                        this.ajouterActivite(`${item.vrid} envoyé vers FluxDock depuis ${ligneVide.fcSource}`)
+                        this.afficherNotification(`✅ ${item.vrid} envoyé vers FluxDock`, 'success')
+                    } else {
+                        this.afficherNotification('❌ Aucune ligne vide disponible dans FluxDock', 'error')
+                    }
+                },
+
+                // Skynet Methods
+                ajouterActivite(message) {
+                    const nouvelleActivite = {
+                        id: Date.now(),
+                        timestamp: new Date(),
+                        message: message
+                    }
+                    
+                    this.recentActivities.unshift(nouvelleActivite)
+                    
+                    // Garder seulement les 10 dernières activités
+                    if (this.recentActivities.length > 10) {
+                        this.recentActivities = this.recentActivities.slice(0, 10)
+                    }
+                },
+
+                // VRID du jour AFT Methods
+                chargerVRIDDuJour() {
+                    // Ajouter un nouveau VRID au planning
+                    const nouveauPlanning = {
+                        id: this.planningDuJour.length + 1,
+                        heurePrevu: new Date(Date.now() + (this.planningDuJour.length * 3600000)).toISOString().slice(0, 16),
+                        vrid: `AFT${String(this.planningDuJour.length + 1).padStart(3, '0')}`,
+                        pallets: Math.floor(Math.random() * 30) + 10,
+                        units: Math.floor(Math.random() * 500) + 200,
+                        location: this.listeQuaiInbound.quais[Math.floor(Math.random() * this.listeQuaiInbound.quais.length)],
+                        statut: 'PLANIFIE',
+                        progression: 0
+                    }
+                    
+                    this.planningDuJour.push(nouveauPlanning)
+                    this.afficherNotification('📅 Nouveau VRID ajouté au planning du jour', 'success')
+                },
+
+                planifierVRID() {
+                    this.afficherNotification('📋 Fonction de planification activée', 'info')
+                },
+
+                exporterPlanning() {
+                    const planning = JSON.stringify(this.planningDuJour, null, 2)
+                    const blob = new Blob([planning], { type: 'application/json' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `planning-aft-${this.formatDate(new Date())}.json`
+                    document.body.appendChild(a)
+                    a.click()
+                    document.body.removeChild(a)
+                    URL.revokeObjectURL(url)
+                    
+                    this.afficherNotification('📤 Planning exporté avec succès', 'success')
+                },
+
+                mettreAJourProgression(planning) {
+                    if (planning.progression < 100) {
+                        planning.progression = Math.min(100, planning.progression + 25)
+                        
+                        if (planning.progression === 100) {
+                            planning.statut = 'TERMINE'
+                        } else if (planning.progression > 0) {
+                            planning.statut = 'EN_COURS'
+                        }
+                        
+                        this.ajouterActivite(`Progression ${planning.vrid}: ${planning.progression}%`)
+                        this.afficherNotification(`📊 ${planning.vrid}: ${planning.progression}%`, 'info')
+                    }
+                },
+
+                // Helpers pour l'affichage
+                formatDate(date) {
+                    return date.toLocaleDateString('fr-FR')
+                },
+
+                formatTime(dateTime) {
+                    return new Date(dateTime).toLocaleTimeString('fr-FR', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    })
+                },
+
+                getStatusClass(statut) {
+                    const classes = {
+                        'EN_COURS': 'status-en-cours',
+                        'TERMINE': 'status-termine',
+                        'RETARD': 'status-retard',
+                        'PLANIFIE': 'status-planifie'
+                    }
+                    return classes[statut] || ''
+                },
+
+                getStatusIcon(statut) {
+                    const icons = {
+                        'EN_COURS': '🔄',
+                        'TERMINE': '✅',
+                        'RETARD': '⚠️',
+                        'PLANIFIE': '📅'
+                    }
+                    return icons[statut] || '❓'
+                },
+
+                // ===== TEMPS =====
+                updateTime() {
+                    const now = new Date()
+                    this.currentTime = now.toLocaleString('fr-FR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })
+                }
+            },
+
+            mounted() {
+                this.updateTime()
+                setInterval(this.updateTime, 1000)
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

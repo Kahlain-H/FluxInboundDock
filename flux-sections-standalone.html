@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚛 FluxDock Sections - Application Complète</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-grid.css">
+    <link rel="stylesheet" href="https://unpkg.com/ag-grid-community/styles/ag-theme-alpine.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        #app {
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+        }
+
+        .header-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .system-status {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .current-time {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .tab-navigation {
+            background: white;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 5px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .tab-button:hover {
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .tab-icon {
+            font-size: 1.2rem;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            min-height: calc(100vh - 140px);
+        }
+
+        .tab-content {
+            padding: 20px;
+        }
+
+        /* ===== FLUX DOCK SECTIONS ===== */
+        .flux-dock-sections {
+            padding: 20px;
+        }
+
+        .flux-dock-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .flux-dock-header h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .main-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 10px;
+        }
+
+        .global-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: #2c3e50;
+            border: 1px solid #e9ecef;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section-container {
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .in-progress-section {
+            border-left: 6px solid #3498db;
+        }
+
+        .vrac-section {
+            border-left: 6px solid #f39c12;
+        }
+
+        .palettized-section {
+            border-left: 6px solid #9b59b6;
+        }
+
+        .done-section {
+            border-left: 6px solid #27ae60;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .section-title h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .section-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-info {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            background: #6c757d;
+            color: white;
+        }
+
+        .section-grid {
+            background: #fafbfc;
+            padding: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .data-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .move-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .move-btn:hover {
+            background: #2980b9;
+        }
+
+        .location-cell {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .location-available {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #66bb6a;
+        }
+
+        .location-occupied {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+
+        .priority-high {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        /* ===== MODAL ===== */
+        .move-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .move-modal {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        .close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .current-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .move-options h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .move-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .move-btn-option {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            color: #2c3e50;
+        }
+
+        .move-btn-option:hover {
+            border-color: #3498db;
+            background: #ebf3fd;
+        }
+
+        .move-btn-option small {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .location-selection {
+            margin: 20px 0;
+        }
+
+        .location-dropdown {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            padding: 12px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .notification {
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            border-left-color: #27ae60;
+        }
+
+        .notification.error {
+            border-left-color: #e74c3c;
+        }
+
+        .notification.warning {
+            border-left-color: #f39c12;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+                padding: 10px;
+            }
+
+            .main-toolbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .global-stats {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .move-modal {
+                width: 95%;
+                margin: 10px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- En-tête -->
+        <header class="main-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>🚛 Flux Inbound Dock</h1>
+                </div>
+                <div class="header-info">
+                    <span class="system-status">🟢 Système en ligne</span>
+                    <span class="current-time">{{ currentTime }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="tab-navigation">
+            <button 
+                v-for="tab in tabs" 
+                :key="tab.id"
+                :class="['tab-button', { active: activeTab === tab.id }]"
+                @click="activeTab = tab.id"
+            >
+                <span class="tab-icon">{{ tab.icon }}</span>
+                {{ tab.name }}
+            </button>
+        </nav>
+
+        <!-- Contenu -->
+        <main class="main-content">
+            <!-- Flux Sections -->
+            <div v-if="activeTab === 'flux-sections'" class="tab-content">
+                <div class="flux-dock-sections">
+                    <div class="flux-dock-header">
+                        <h2>🚛 Flux Dock Inbound - Gestion par Sections</h2>
+                        <p>Organisation structurée par statuts avec système de déplacement intégré</p>
+                        
+                        <!-- Barre d'outils générale -->
+                        <div class="main-toolbar">
+                            <div class="toolbar-left">
+                                <button class="btn btn-success" @click="refreshAllSections">
+                                    🔄 Actualiser Tout
+                                </button>
+                                <button class="btn btn-info" @click="autoArrangeAll">
+                                    🎯 Auto-Organisation
+                                </button>
+                                <button class="btn btn-warning" @click="validateAllLocations">
+                                    ✅ Valider Emplacements
+                                </button>
+                            </div>
+                            <div class="toolbar-right">
+                                <div class="global-stats">
+                                    <span class="stat-item">📦 Total: {{ getTotalVRID() }}</span>
+                                    <span class="stat-item">⏳ En cours: {{ getSectionCount('IN PROGRESS') }}</span>
+                                    <span class="stat-item">🔄 En traitement: {{ getSectionCount('VRAC') + getSectionCount('PALETTIZED') }}</span>
+                                    <span class="stat-item">✅ Terminé: {{ getSectionCount('DONE') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section IN PROGRESS -->
+                    <div class="section-container in-progress-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">🔄</span>
+                                <h3>IN PROGRESS ({{ getSectionCount('IN PROGRESS') }})</h3>
+                            </div>
+                            <div class="section-actions">
+                                <button class="btn btn-add" @click="ajouterLigneInProgress">
+                                    ➕ Ajouter ligne IN PROGRESS
+                                </button>
+                                <button class="btn btn-small" @click="collapseSection('IN PROGRESS')">
+                                    {{ collapsedSections['IN PROGRESS'] ? '📖' : '📕' }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="!collapsedSections['IN PROGRESS']" class="section-grid">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>VRID</th>
+                                        <th>PRIORITÉ</th>
+                                        <th>PALLETS</th>
+                                        <th>BT</th>
+                                        <th>UNITS</th>
+                                        <th>LOCATION</th>
+                                        <th>REMORQUES</th>
+                                        <th>MOVE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="vrid in getSectionData('IN PROGRESS')" :key="vrid.id">
+                                        <td><strong>{{ vrid.vrid }}</strong></td>
+                                        <td>
+                                            <span :class="getPriorityClass(vrid.priority)">
+                                                {{ getPriorityIcon(vrid.priority) }} {{ vrid.priority }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vrid.pallets }}</td>
+                                        <td>{{ vrid.bt }}</td>
+                                        <td>{{ vrid.units?.toLocaleString() }}</td>
+                                        <td>
+                                            <span :class="getLocationClass(vrid.location, vrid.id)">
+                                                {{ vrid.location || 'Non assigné' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vrid.remorques }}</td>
+                                        <td>
+                                            <button class="move-btn" @click="openMoveModal(vrid)" v-if="getValidMoves('IN PROGRESS').length > 0">
+                                                🚀 MOVE
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section VRAC -->
+                    <div class="section-container vrac-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">📦</span>
+                                <h3>VRAC ({{ getSectionCount('VRAC') }})</h3>
+                            </div>
+                            <div class="section-actions">
+                                <button class="btn btn-add" @click="ajouterLigneVrac">
+                                    ➕ Ajouter ligne VRAC
+                                </button>
+                                <button class="btn btn-small" @click="collapseSection('VRAC')">
+                                    {{ collapsedSections['VRAC'] ? '📖' : '📕' }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="!collapsedSections['VRAC']" class="section-grid">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>VRID</th>
+                                        <th>PALLETS</th>
+                                        <th>BT</th>
+                                        <th>UNITS</th>
+                                        <th>LOCATION</th>
+                                        <th>REMORQUES</th>
+                                        <th>MOVE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="vrid in getSectionData('VRAC')" :key="vrid.id">
+                                        <td><strong>{{ vrid.vrid }}</strong></td>
+                                        <td>{{ vrid.pallets }}</td>
+                                        <td>{{ vrid.bt }}</td>
+                                        <td>{{ vrid.units?.toLocaleString() }}</td>
+                                        <td>
+                                            <span :class="getLocationClass(vrid.location, vrid.id)">
+                                                {{ vrid.location || 'Non assigné' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vrid.remorques }}</td>
+                                        <td>
+                                            <button class="move-btn" @click="openMoveModal(vrid)" v-if="getValidMoves('VRAC').length > 0">
+                                                🚀 MOVE
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section PALETTIZED -->
+                    <div class="section-container palettized-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">🏗️</span>
+                                <h3>PALETTIZED ({{ getSectionCount('PALETTIZED') }})</h3>
+                            </div>
+                            <div class="section-actions">
+                                <button class="btn btn-add" @click="ajouterLignePalettized">
+                                    ➕ Ajouter ligne PALETTIZED
+                                </button>
+                                <button class="btn btn-small" @click="collapseSection('PALETTIZED')">
+                                    {{ collapsedSections['PALETTIZED'] ? '📖' : '📕' }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="!collapsedSections['PALETTIZED']" class="section-grid">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>VRID</th>
+                                        <th>PALLETS</th>
+                                        <th>BT</th>
+                                        <th>UNITS</th>
+                                        <th>LOCATION</th>
+                                        <th>REMORQUES</th>
+                                        <th>MOVE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="vrid in getSectionData('PALETTIZED')" :key="vrid.id">
+                                        <td><strong>{{ vrid.vrid }}</strong></td>
+                                        <td>{{ vrid.pallets }}</td>
+                                        <td>{{ vrid.bt }}</td>
+                                        <td>{{ vrid.units?.toLocaleString() }}</td>
+                                        <td>
+                                            <span :class="getLocationClass(vrid.location, vrid.id)">
+                                                {{ vrid.location || 'Non assigné' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vrid.remorques }}</td>
+                                        <td>
+                                            <button class="move-btn" @click="openMoveModal(vrid)" v-if="getValidMoves('PALETTIZED').length > 0">
+                                                🚀 MOVE
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Section DONE -->
+                    <div class="section-container done-section">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">✅</span>
+                                <h3>DONE ({{ getSectionCount('DONE') }})</h3>
+                            </div>
+                            <div class="section-actions">
+                                <button class="btn btn-add" @click="ajouterLigneDone">
+                                    ➕ Ajouter ligne DONE
+                                </button>
+                                <button class="btn btn-small" @click="collapseSection('DONE')">
+                                    {{ collapsedSections['DONE'] ? '📖' : '📕' }}
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div v-if="!collapsedSections['DONE']" class="section-grid">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>VRID</th>
+                                        <th>PALLETS</th>
+                                        <th>BT</th>
+                                        <th>UNITS</th>
+                                        <th>LOCATION</th>
+                                        <th>TERMINÉ LE</th>
+                                        <th>MOVE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="vrid in getSectionData('DONE')" :key="vrid.id">
+                                        <td><strong>{{ vrid.vrid }}</strong></td>
+                                        <td>{{ vrid.pallets }}</td>
+                                        <td>{{ vrid.bt }}</td>
+                                        <td>{{ vrid.units?.toLocaleString() }}</td>
+                                        <td>
+                                            <span :class="getLocationClass(vrid.location, vrid.id)">
+                                                {{ vrid.location || 'Non assigné' }}
+                                            </span>
+                                        </td>
+                                        <td>{{ vrid.completedAt ? new Date(vrid.completedAt).toLocaleString('fr-FR') : '' }}</td>
+                                        <td>—</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Modal de déplacement -->
+                    <div v-if="showMoveModal" class="move-modal-overlay" @click="closeMoveModal">
+                        <div class="move-modal" @click.stop>
+                            <div class="modal-header">
+                                <h3>🚀 Déplacer VRID: {{ selectedVRID?.vrid }}</h3>
+                                <button class="close-btn" @click="closeMoveModal">✕</button>
+                            </div>
+                            
+                            <div class="modal-content">
+                                <div class="current-status">
+                                    <strong>Statut actuel:</strong> {{ selectedVRID?.statut }}
+                                    <br>
+                                    <strong>Location actuelle:</strong> {{ selectedVRID?.location }}
+                                </div>
+
+                                <div class="move-options">
+                                    <h4>🎯 Déplacements possibles:</h4>
+                                    <div class="move-buttons">
+                                        <div 
+                                            v-for="move in getValidMoves(selectedVRID?.statut)"
+                                            :key="move.to"
+                                            :class="['move-btn-option']"
+                                            @click="executeMoveVRID(move.to)"
+                                        >
+                                            {{ selectedVRID?.statut }} → {{ move.to }}
+                                            <small>{{ move.description }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div v-if="moveRequiresLocation" class="location-selection">
+                                    <h4>📍 Sélectionner l'emplacement:</h4>
+                                    <select v-model="selectedMoveLocation" class="location-dropdown">
+                                        <option value="">-- Choisir emplacement --</option>
+                                        <optgroup 
+                                            v-for="(locations, type) in getAvailableLocations(targetMoveStatus)"
+                                            :key="type"
+                                            :label="type"
+                                        >
+                                            <option 
+                                                v-for="location in locations"
+                                                :key="location"
+                                                :value="location"
+                                                :disabled="isLocationOccupied(location)"
+                                            >
+                                                {{ location }} {{ isLocationOccupied(location) ? '(Occupé)' : '' }}
+                                            </option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="modal-actions">
+                                <button class="btn btn-success" @click="confirmMove" :disabled="!canConfirmMove">
+                                    ✅ Confirmer le Déplacement
+                                </button>
+                                <button class="btn btn-secondary" @click="closeMoveModal">
+                                    ❌ Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autres onglets -->
+            <div v-if="activeTab === 'dashboard'" class="tab-content">
+                <h2>📊 Dashboard</h2>
+                <p>Tableau de bord avec métriques et indicateurs.</p>
+            </div>
+
+            <div v-if="activeTab === 'aft'" class="tab-content">
+                <h2>📥 AFT Import</h2>
+                <p>Interface d'import AFT avec gestion CSV.</p>
+            </div>
+
+            <div v-if="activeTab === 'fmc'" class="tab-content">
+                <h2>📄 FMC Import</h2>
+                <p>Interface d'import FMC avec validation des données.</p>
+            </div>
+        </main>
+
+        <!-- Notifications -->
+        <div class="notifications">
+            <div 
+                v-for="notification in notifications" 
+                :key="notification.id"
+                :class="['notification', notification.type]"
+            >
+                {{ notification.message }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    activeTab: 'flux-sections',
+                    currentTime: '',
+                    
+                    tabs: [
+                        { id: 'flux-sections', name: 'Flux_Sections', icon: '📋' },
+                        { id: 'dashboard', name: 'Dashboard', icon: '📊' },
+                        { id: 'aft', name: 'AFT', icon: '📥' },
+                        { id: 'fmc', name: 'FMC', icon: '📄' }
+                    ],
+
+                    // Données des sections
+                    vridData: [
+                        {
+                            id: 1,
+                            vrid: 'IP001',
+                            statut: 'IN PROGRESS',
+                            pallets: 25,
+                            bt: 5,
+                            units: 500,
+                            location: 'QUAI_1',
+                            remorques: 'REM001',
+                            priority: 'HIGH',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 2,
+                            vrid: 'VR001',
+                            statut: 'VRAC',
+                            pallets: 12,
+                            bt: 2,
+                            units: 240,
+                            location: 'ZONE_VRAC_1',
+                            remorques: 'REM002',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 3,
+                            vrid: 'PL001',
+                            statut: 'PALETTIZED',
+                            pallets: 30,
+                            bt: 6,
+                            units: 600,
+                            location: 'ZONE_PALETTE_1',
+                            remorques: 'REM003',
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        },
+                        {
+                            id: 4,
+                            vrid: 'DN001',
+                            statut: 'DONE',
+                            pallets: 20,
+                            bt: 4,
+                            units: 400,
+                            location: 'STOCK_A',
+                            remorques: 'REM004',
+                            completedAt: new Date(),
+                            createdAt: new Date(),
+                            updatedAt: new Date()
+                        }
+                    ],
+
+                    collapsedSections: {
+                        'IN PROGRESS': false,
+                        'VRAC': false,
+                        'PALETTIZED': false,
+                        'DONE': false
+                    },
+
+                    // Modal de déplacement
+                    showMoveModal: false,
+                    selectedVRID: null,
+                    selectedMoveLocation: '',
+                    targetMoveStatus: '',
+                    moveRequiresLocation: false,
+
+                    // Configuration des emplacements
+                    locationConfig: {
+                        'IN PROGRESS': {
+                            QUAI: ['QUAI_1', 'QUAI_2', 'QUAI_3', 'QUAI_4'],
+                            QUEUE: ['QUEUE_A', 'QUEUE_B', 'QUEUE_C']
+                        },
+                        'VRAC': {
+                            ZONE_VRAC: ['ZONE_VRAC_1', 'ZONE_VRAC_2', 'ZONE_VRAC_3'],
+                            QUAI: ['QUAI_1', 'QUAI_2', 'QUAI_3']
+                        },
+                        'PALETTIZED': {
+                            ZONE_PALETTE: ['ZONE_PALETTE_1', 'ZONE_PALETTE_2', 'ZONE_PALETTE_3'],
+                            STOCK_TEMP: ['STOCK_TEMP_A', 'STOCK_TEMP_B']
+                        },
+                        'DONE': {
+                            STOCK: ['STOCK_A', 'STOCK_B', 'STOCK_C', 'STOCK_D'],
+                            EXPEDIE: ['EXPEDIE_1', 'EXPEDIE_2']
+                        }
+                    },
+
+                    // Règles de déplacement
+                    moveRules: {
+                        'IN PROGRESS': [
+                            { to: 'DONE', description: 'Terminer directement', requiresLocation: true },
+                            { to: 'VRAC', description: 'Envoyer en vrac', requiresLocation: true },
+                            { to: 'PALETTIZED', description: 'Palettiser directement', requiresLocation: true }
+                        ],
+                        'VRAC': [
+                            { to: 'PALETTIZED', description: 'Palettiser', requiresLocation: true },
+                            { to: 'DONE', description: 'Terminer', requiresLocation: true },
+                            { to: 'IN PROGRESS', description: 'Retour en cours', requiresLocation: true }
+                        ],
+                        'PALETTIZED': [
+                            { to: 'DONE', description: 'Terminer', requiresLocation: true },
+                            { to: 'IN PROGRESS', description: 'Retour en cours', requiresLocation: true }
+                        ],
+                        'DONE': []
+                    },
+
+                    notifications: []
+                }
+            },
+
+            computed: {
+                canConfirmMove() {
+                    return this.targetMoveStatus && 
+                           (!this.moveRequiresLocation || this.selectedMoveLocation)
+                }
+            },
+
+            methods: {
+                // ===== GESTION DES SECTIONS =====
+                getSectionData(status) {
+                    return this.vridData.filter(vrid => vrid.statut === status)
+                },
+
+                getSectionCount(status) {
+                    return this.getSectionData(status).length
+                },
+
+                getTotalVRID() {
+                    return this.vridData.length
+                },
+
+                collapseSection(status) {
+                    this.collapsedSections[status] = !this.collapsedSections[status]
+                },
+
+                // ===== FONCTIONS D'AJOUT =====
+                ajouterLigneInProgress() {
+                    const newVRID = this.createNewVRID('IN PROGRESS')
+                    this.vridData.push(newVRID)
+                    this.showNotification(`✅ Nouvelle ligne IN PROGRESS ajoutée: ${newVRID.vrid}`, 'success')
+                },
+
+                ajouterLigneVrac() {
+                    const newVRID = this.createNewVRID('VRAC')
+                    this.vridData.push(newVRID)
+                    this.showNotification(`✅ Nouvelle ligne VRAC ajoutée: ${newVRID.vrid}`, 'success')
+                },
+
+                ajouterLignePalettized() {
+                    const newVRID = this.createNewVRID('PALETTIZED')
+                    this.vridData.push(newVRID)
+                    this.showNotification(`✅ Nouvelle ligne PALETTIZED ajoutée: ${newVRID.vrid}`, 'success')
+                },
+
+                ajouterLigneDone() {
+                    const newVRID = this.createNewVRID('DONE')
+                    newVRID.completedAt = new Date()
+                    this.vridData.push(newVRID)
+                    this.showNotification(`✅ Nouvelle ligne DONE ajoutée: ${newVRID.vrid}`, 'success')
+                },
+
+                createNewVRID(statut) {
+                    const count = this.getSectionCount(statut) + 1
+                    const prefix = {
+                        'IN PROGRESS': 'IP',
+                        'VRAC': 'VR',
+                        'PALETTIZED': 'PL',
+                        'DONE': 'DN'
+                    }[statut]
+
+                    return {
+                        id: Date.now() + Math.random(),
+                        vrid: `${prefix}${String(count).padStart(3, '0')}`,
+                        statut: statut,
+                        pallets: Math.floor(Math.random() * 30) + 1,
+                        bt: Math.floor(Math.random() * 6) + 1,
+                        units: Math.floor(Math.random() * 500) + 100,
+                        location: this.getDefaultLocationForStatus(statut),
+                        remorques: `REM${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`,
+                        priority: statut === 'IN PROGRESS' ? this.getRandomPriority() : undefined,
+                        createdAt: new Date(),
+                        updatedAt: new Date()
+                    }
+                },
+
+                // ===== SYSTÈME DE DÉPLACEMENT =====
+                openMoveModal(vrid) {
+                    this.selectedVRID = vrid
+                    this.showMoveModal = true
+                    this.selectedMoveLocation = ''
+                    this.targetMoveStatus = ''
+                    this.moveRequiresLocation = false
+                },
+
+                closeMoveModal() {
+                    this.showMoveModal = false
+                    this.selectedVRID = null
+                    this.selectedMoveLocation = ''
+                    this.targetMoveStatus = ''
+                    this.moveRequiresLocation = false
+                },
+
+                getValidMoves(currentStatus) {
+                    return this.moveRules[currentStatus] || []
+                },
+
+                executeMoveVRID(toStatus) {
+                    this.targetMoveStatus = toStatus
+                    const move = this.moveRules[this.selectedVRID.statut].find(m => m.to === toStatus)
+                    
+                    if (move) {
+                        this.moveRequiresLocation = move.requiresLocation
+                    }
+                },
+
+                confirmMove() {
+                    if (!this.canConfirmMove) return
+
+                    // Validation de l'emplacement si requis
+                    if (this.moveRequiresLocation && this.isLocationOccupied(this.selectedMoveLocation)) {
+                        this.showNotification(`❌ Emplacement ${this.selectedMoveLocation} déjà occupé!`, 'error')
+                        return
+                    }
+
+                    // Exécution du déplacement
+                    const oldStatus = this.selectedVRID.statut
+
+                    // Mise à jour du VRID
+                    this.selectedVRID.statut = this.targetMoveStatus
+                    if (this.selectedMoveLocation) {
+                        this.selectedVRID.location = this.selectedMoveLocation
+                    }
+                    this.selectedVRID.updatedAt = new Date()
+
+                    // Marquer comme terminé si DONE
+                    if (this.targetMoveStatus === 'DONE') {
+                        this.selectedVRID.completedAt = new Date()
+                    }
+
+                    // Notification
+                    this.showNotification(
+                        `✅ ${this.selectedVRID.vrid} déplacé: ${oldStatus} → ${this.targetMoveStatus}`,
+                        'success'
+                    )
+
+                    // Fermeture du modal
+                    this.closeMoveModal()
+                },
+
+                // ===== VALIDATION =====
+                getAvailableLocations(status) {
+                    return this.locationConfig[status] || {}
+                },
+
+                getDefaultLocationForStatus(status) {
+                    const config = this.locationConfig[status]
+                    if (config) {
+                        const firstGroup = Object.values(config)[0]
+                        return firstGroup[0] || ''
+                    }
+                    return ''
+                },
+
+                isLocationOccupied(location, excludeId = null) {
+                    if (!location) return false
+                    
+                    return this.vridData.some(vrid => 
+                        vrid.location === location && vrid.id !== excludeId
+                    )
+                },
+
+                validateAllLocations() {
+                    let conflicts = 0
+                    const locationMap = new Map()
+
+                    this.vridData.forEach(vrid => {
+                        if (vrid.location) {
+                            if (locationMap.has(vrid.location)) {
+                                conflicts++
+                            } else {
+                                locationMap.set(vrid.location, vrid.vrid)
+                            }
+                        }
+                    })
+
+                    if (conflicts > 0) {
+                        this.showNotification(`⚠️ ${conflicts} conflits d'emplacements détectés!`, 'warning')
+                    } else {
+                        this.showNotification(`✅ Tous les emplacements sont valides!`, 'success')
+                    }
+                },
+
+                // ===== HELPERS =====
+                getPriorityClass(priority) {
+                    return `priority-${priority?.toLowerCase()}`
+                },
+
+                getPriorityIcon(priority) {
+                    const icons = { HIGH: '🔴', MEDIUM: '🟡', LOW: '🟢' }
+                    return icons[priority] || '⚪'
+                },
+
+                getLocationClass(location, excludeId) {
+                    if (!location) return 'location-cell'
+                    return this.isLocationOccupied(location, excludeId) 
+                        ? 'location-cell location-occupied' 
+                        : 'location-cell location-available'
+                },
+
+                getRandomPriority() {
+                    const priorities = ['HIGH', 'MEDIUM', 'LOW']
+                    return priorities[Math.floor(Math.random() * priorities.length)]
+                },
+
+                // ===== ACTIONS GÉNÉRALES =====
+                refreshAllSections() {
+                    this.showNotification('🔄 Toutes les sections actualisées', 'info')
+                },
+
+                autoArrangeAll() {
+                    // Tri par priorité pour IN PROGRESS
+                    this.vridData.sort((a, b) => {
+                        if (a.statut === 'IN PROGRESS' && b.statut === 'IN PROGRESS') {
+                            const priorityOrder = { HIGH: 3, MEDIUM: 2, LOW: 1 }
+                            return priorityOrder[b.priority] - priorityOrder[a.priority]
+                        }
+                        return 0
+                    })
+                    this.showNotification('🎯 Auto-organisation appliquée', 'info')
+                },
+
+                // ===== NOTIFICATIONS =====
+                showNotification(message, type = 'info') {
+                    const notification = {
+                        id: Date.now(),
+                        message,
+                        type
+                    }
+                    this.notifications.push(notification)
+                    
+                    setTimeout(() => {
+                        const index = this.notifications.findIndex(n => n.id === notification.id)
+                        if (index > -1) {
+                            this.notifications.splice(index, 1)
+                        }
+                    }, 4000)
+                },
+
+                // ===== TEMPS =====
+                updateTime() {
+                    const now = new Date()
+                    this.currentTime = now.toLocaleString('fr-FR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    })
+                }
+            },
+
+            mounted() {
+                this.updateTime()
+                setInterval(this.updateTime, 1000)
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

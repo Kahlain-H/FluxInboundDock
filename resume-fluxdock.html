@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Résumé FluxDock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #f6f8fa;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 32px 24px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      color: #2471a3;
+    }
+    h2 {
+      font-size: 1.3rem;
+      margin-top: 32px;
+      color: #444;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .stat {
+      background: #f1f7fc;
+      border-radius: 10px;
+      padding: 18px 24px;
+      min-width: 180px;
+      flex: 1;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(36,113,163,0.07);
+    }
+    .stat-title {
+      font-size: 1.05rem;
+      color: #2471a3;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #222;
+    }
+    .fifo-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .fifo-list li {
+      background: #eaf2fb;
+      margin-bottom: 6px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 1.08rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section {
+      margin-top: 32px;
+    }
+    .chart-container {
+      margin-top: 32px;
+      background: #f1f7fc;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(36,113,163,0.07);
+    }
+    @media (max-width: 700px) {
+      .container { padding: 12px 4px; }
+      .stats { flex-direction: column; gap: 12px; }
+      .stat { min-width: 120px; padding: 12px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Résumé Global FluxDock</h1>
+    <div id="resume-stats" class="stats"></div>
+    <h2>Les 6 prochaines VRID à injecter (FIFO global)</h2>
+    <ul id="fifo-list" class="fifo-list"></ul>
+    <div class="section">
+      <h2>VRID en cours d'injection (In Progress)</h2>
+      <ul id="inprogress-list" class="fifo-list"></ul>
+    </div>
+    <div class="chart-container">
+      <h2>Visualisation des Flux</h2>
+      <canvas id="fluxChart" height="120"></canvas>
+    </div>
+    <div class="section">
+      <h2>Explications & Historique</h2>
+      <p>
+        Cette page résume l'activité du flux inbound dock : <br>
+        <b>Ce qui s'est passé</b> : nombre de VRID injectés, unités, BT, palettes, etc.<br>
+        <b>Ce qui est en cours</b> : VRID en injection, en transit, FIFO à venir.<br>
+        <b>Ce qui arrive</b> : les prochaines VRID à injecter, respect du FIFO entre VRAC et Palettized.<br>
+        <b>Graphique</b> : visualisation claire des flux et de la répartition.
+      </p>
+    </div>
+  </div>
+  <script>
+    // --- Chargement des données depuis localStorage (même structure que l'app principale) ---
+    function getFluxData() {
+      const data = JSON.parse(localStorage.getItem('fluxInboundDockData') || '{}');
+      return {
+        vrac: data.vracData || [],
+        palettized: data.palettizedData || [],
+        inProgress: data.inProgressData || [],
+        done: data.doneData || []
+      };
+    }
+
+    function getStats(flux) {
+      // VRID Done
+      const doneVRID = flux.done.map(row => row.vrid).filter(Boolean);
+      // Unités Done
+      const totalUnitsDone = flux.done.reduce((sum, row) => sum + (parseInt(row.units)||0), 0);
+      // BT Done
+      const totalBTDone = flux.done.reduce((sum, row) => sum + (parseInt(row.bt)||0), 0);
+      // Palettes Done
+      const totalPalletsDone = flux.done.reduce((sum, row) => sum + (parseInt(row.pallets)||0), 0);
+      // VRID en transit
+      const transitVRID = [...flux.vrac, ...flux.palettized].filter(row => row.statut === 'In Transit').map(row => row.vrid).filter(Boolean);
+      // VRID In Progress
+      const inProgressVRID = flux.inProgress.map(row => row.vrid).filter(Boolean);
+      // Unités In Progress
+      const totalUnitsInProgress = flux.inProgress.reduce((sum, row) => sum + (parseInt(row.units)||0), 0);
+      // VRID FIFO à injecter (statut Not Started, FIFO global)
+      const fifoRows = [...flux.vrac, ...flux.palettized].filter(row => row.statut === 'Not Started').sort((a,b) => {
+        // FIFO par SBD croissant, puis VRID
+        if (a.sbd && b.sbd) return a.sbd.localeCompare(b.sbd);
+        if (a.sbd) return -1;
+        if (b.sbd) return 1;
+        return a.vrid.localeCompare(b.vrid);
+      });
+      const fifoVRID = fifoRows.map(row => row.vrid).filter(Boolean).slice(0,6);
+      return {
+        doneVRID,
+        totalUnitsDone,
+        totalBTDone,
+        totalPalletsDone,
+        transitVRID,
+        inProgressVRID,
+        totalUnitsInProgress,
+        fifoVRID
+      };
+    }
+
+    function renderStats(stats) {
+      document.getElementById('resume-stats').innerHTML = `
+        <div class="stat">
+          <div class="stat-title">VRID injectés (Done)</div>
+          <div class="stat-value">${stats.doneVRID.length}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Unités injectées (Done)</div>
+          <div class="stat-value">${stats.totalUnitsDone}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">BT injectés (Done)</div>
+          <div class="stat-value">${stats.totalBTDone}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Palettes injectées (Done)</div>
+          <div class="stat-value">${stats.totalPalletsDone}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">VRID en transit</div>
+          <div class="stat-value">${stats.transitVRID.length}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">Unités en cours d'injection</div>
+          <div class="stat-value">${stats.totalUnitsInProgress}</div>
+        </div>
+      `;
+    }
+
+    function renderFIFO(fifoVRID) {
+      document.getElementById('fifo-list').innerHTML = fifoVRID.map((vrid, i) => `<li><b>#${i+1}</b> ${vrid}</li>`).join('');
+    }
+
+    function renderInProgress(inProgressVRID) {
+      document.getElementById('inprogress-list').innerHTML = inProgressVRID.map(vrid => `<li>${vrid}</li>`).join('');
+    }
+
+    function renderChart(stats) {
+      const ctx = document.getElementById('fluxChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Injectés', 'En Transit', 'En cours', 'FIFO à injecter'],
+          datasets: [{
+            data: [
+              stats.doneVRID.length,
+              stats.transitVRID.length,
+              stats.inProgressVRID.length,
+              stats.fifoVRID.length
+            ],
+            backgroundColor: [
+              '#28a745', '#fd7e14', '#3498db', '#dc3545'
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    // --- Initialisation ---
+    const flux = getFluxData();
+    const stats = getStats(flux);
+    renderStats(stats);
+    renderFIFO(stats.fifoVRID);
+    renderInProgress(stats.inProgressVRID);
+    renderChart(stats);
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# Instructions pour Partage de Fichiers Windows
+# ================================================
+
+## MÉTHODE 1: Serveur Python (Recommandée)
+1. Double-cliquer sur "serveur-web.py"
+2. Le serveur démarre automatiquement
+3. Noter l'adresse IP affichée (ex: 192.168.1.100:8080)
+4. Sur les autres PC: ouvrir navigateur → http://IP_AFFICHEE:8080
+
+## MÉTHODE 2: Partage Windows
+1. Clic droit sur le dossier FluxInboundDock
+2. Propriétés → Onglet "Partage"
+3. Cliquer "Partage avancé"
+4. Cocher "Partager ce dossier"
+5. Sur les autres PC: 
+   - Ouvrir Explorateur de fichiers
+   - Taper dans la barre d'adresse: \\NOM_PC_PRINCIPAL\FluxInboundDock
+   - Double-cliquer sur flux-sections-excel-style.html
+
+## MÉTHODE 3: Copier le fichier
+1. Copier flux-sections-excel-style.html sur une clé USB
+2. Coller sur les autres PC
+3. Double-cliquer pour ouvrir
+4. Toutes les données sont sauvegardées automatiquement
+
+## Notes importantes:
+- La MÉTHODE 1 (serveur Python) est la plus professionnelle
+- Toutes les données sont synchronisées automatiquement
+- Le Dashboard et Yard Manager fonctionnent sur tous les PC
+- Aucune installation supplémentaire requise

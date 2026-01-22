@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚛 Démonstration Flux Dock Sections</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .demo-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .demo-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .demo-content {
+            padding: 40px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-card.vrac {
+            border-left-color: #f39c12;
+        }
+
+        .feature-card.palettized {
+            border-left-color: #9b59b6;
+        }
+
+        .feature-card.done {
+            border-left-color: #27ae60;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: '✅';
+            position: absolute;
+            left: 0;
+        }
+
+        .workflow-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .workflow-title {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .workflow-step {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .workflow-step::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .workflow-step:last-child::after {
+            display: none;
+        }
+
+        .step-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .step-title {
+            color: #2c3e50;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        .demo-actions {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            margin: 30px 0;
+            border-radius: 12px;
+        }
+
+        .demo-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52,152,219,0.3);
+        }
+
+        .demo-btn.secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .demo-btn.secondary:hover {
+            box-shadow: 0 10px 20px rgba(149,165,166,0.3);
+        }
+
+        .technical-specs {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .technical-specs h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .spec-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #3498db;
+        }
+
+        .spec-label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .spec-value {
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .advantages-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .advantages-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        .advantages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .advantage-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .advantage-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .advantage-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .responsive-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #ffeaa7;
+        }
+
+        @media (max-width: 768px) {
+            .demo-content {
+                padding: 20px;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+            }
+            
+            .workflow-step::after {
+                display: none;
+            }
+            
+            .demo-btn {
+                display: block;
+                margin: 10px 0;
+            }
+        }
+
+        .loading-demo {
+            text-align: center;
+            padding: 50px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .spinner {
+            border: 4px solid #e9ecef;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚛 Flux Dock Sections - Système VBA Reproduit</h1>
+            <p>Interface organisée par sections avec système de déplacement intelligent</p>
+        </div>
+
+        <div class="demo-content">
+            <!-- Fonctionnalités principales -->
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🔄</span>
+                    <h3>Section IN PROGRESS</h3>
+                    <ul class="feature-list">
+                        <li>Gestion priorités (HIGH/MEDIUM/LOW)</li>
+                        <li>Validation emplacements QUAI/QUEUE</li>
+                        <li>Déplacements vers VRAC/PALETTIZED/DONE</li>
+                        <li>Centrage automatique des données</li>
+                        <li>Bouton "Ajouter ligne IN PROGRESS"</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card vrac">
+                    <span class="feature-icon">📦</span>
+                    <h3>Section VRAC</h3>
+                    <ul class="feature-list">
+                        <li>Zone VRAC et emplacements QUAI</li>
+                        <li>Déplacement vers PALETTIZED</li>
+                        <li>Retour possible vers IN PROGRESS</li>
+                        <li>Validation occupation emplacements</li>
+                        <li>Bouton "Ajouter ligne VRAC"</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card palettized">
+                    <span class="feature-icon">🏗️</span>
+                    <h3>Section PALETTIZED</h3>
+                    <ul class="feature-list">
+                        <li>Zones PALETTE et STOCK_TEMP</li>
+                        <li>Finalisation vers DONE</li>
+                        <li>Retour possible vers IN PROGRESS</li>
+                        <li>Gestion stock temporaire</li>
+                        <li>Bouton "Ajouter ligne PALETTIZED"</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card done">
+                    <span class="feature-icon">✅</span>
+                    <h3>Section DONE</h3>
+                    <ul class="feature-list">
+                        <li>Zones STOCK finales et EXPEDIE</li>
+                        <li>Horodatage automatique completion</li>
+                        <li>Aucun déplacement possible (final)</li>
+                        <li>Statistiques de performance</li>
+                        <li>Bouton "Ajouter ligne DONE"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Workflow de déplacement -->
+            <div class="workflow-section">
+                <h3 class="workflow-title">🚀 Système de Déplacement (Colonne L équivalente)</h3>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <span class="step-icon">🔄</span>
+                        <div class="step-title">IN PROGRESS</div>
+                        <div class="step-description">Point de départ, gestion priorités</div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-icon">📦</span>
+                        <div class="step-title">VRAC</div>
+                        <div class="step-description">Traitement en vrac</div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-icon">🏗️</span>
+                        <div class="step-title">PALETTIZED</div>
+                        <div class="step-description">Palettisation organisée</div>
+                    </div>
+                    <div class="workflow-step">
+                        <span class="step-icon">✅</span>
+                        <div class="step-title">DONE</div>
+                        <div class="step-description">Processus terminé</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spécifications techniques -->
+            <div class="technical-specs">
+                <h3>⚙️ Spécifications Techniques</h3>
+                <div class="specs-grid">
+                    <div class="spec-item">
+                        <div class="spec-label">Framework</div>
+                        <div class="spec-value">Vue.js 3 Composition API</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Grille de données</div>
+                        <div class="spec-value">AG-Grid Enterprise</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Validation</div>
+                        <div class="spec-value">Temps réel + Emplacements</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Déplacements</div>
+                        <div class="spec-value">Modal interactif + Règles</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Reproduction VBA</div>
+                        <div class="spec-value">AjouterLigne() + Colonne L + ListeQuaiInbound</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-label">Formatage</div>
+                        <div class="spec-value">Centrage + Couleurs + Alignement automatique</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avantages -->
+            <div class="advantages-section">
+                <h3 class="advantages-title">🎯 Avantages de cette Approche</h3>
+                <div class="advantages-grid">
+                    <div class="advantage-item">
+                        <span class="advantage-icon">🎨</span>
+                        <div class="advantage-title">Interface Moderne</div>
+                        <div>Remplacement de l'interface Excel par Vue.js moderne et responsive</div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">⚡</span>
+                        <div class="advantage-title">Performance</div>
+                        <div>Temps de réponse instantané, pas de latence Excel/VBA</div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">🔒</span>
+                        <div class="advantage-title">Validation Robuste</div>
+                        <div>Contrôles en temps réel, prévention des erreurs utilisateur</div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">📱</span>
+                        <div class="advantage-title">Multi-dispositifs</div>
+                        <div>Compatible desktop, tablette, mobile - pas possible avec Excel</div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">🔄</span>
+                        <div class="advantage-title">Synchronisation</div>
+                        <div>Données partagées en temps réel entre utilisateurs</div>
+                    </div>
+                    <div class="advantage-item">
+                        <span class="advantage-icon">📊</span>
+                        <div class="advantage-title">Analytics Intégrés</div>
+                        <div>Métriques et KPIs automatiques, pas de calculs manuels</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions de démonstration -->
+            <div class="demo-actions">
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">🚀 Tester le Système</h3>
+                <button class="demo-btn" onclick="openApplication()">
+                    🖥️ Ouvrir l'Application Vue.js
+                </button>
+                <button class="demo-btn secondary" onclick="showLoadingDemo()">
+                    ⚙️ Simuler Chargement
+                </button>
+                <button class="demo-btn" onclick="generateSampleData()">
+                    📊 Générer Données Test
+                </button>
+            </div>
+
+            <!-- Simulateur de chargement -->
+            <div id="loadingDemo" class="loading-demo" style="display: none;">
+                <div class="spinner"></div>
+                <h3>🔄 Initialisation du système FluxDock Sections...</h3>
+                <p>Reproduction des fonctions VBA en cours...</p>
+                <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                    <li id="step1">✅ Configuration des sections</li>
+                    <li id="step2">⏳ Chargement des emplacements...</li>
+                    <li id="step3">⏳ Initialisation AG-Grid...</li>
+                    <li id="step4">⏳ Configuration déplacements...</li>
+                    <li id="step5">⏳ Validation des règles VBA...</li>
+                </ul>
+            </div>
+
+            <!-- Notice responsive -->
+            <div class="responsive-notice">
+                <strong>💡 Interface Adaptative :</strong> Cette interface s'adapte automatiquement à tous les écrans (desktop, tablette, mobile) contrairement à Excel qui nécessite un environnement Windows fixe.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openApplication() {
+            // Simulation d'ouverture de l'application
+            const newWindow = window.open('../index.html', '_blank', 'width=1400,height=900');
+            if (!newWindow) {
+                alert('🚀 Ouvrez index.html dans votre navigateur pour tester l\'application complète!');
+            }
+        }
+
+        function showLoadingDemo() {
+            const loadingDiv = document.getElementById('loadingDemo');
+            loadingDiv.style.display = 'block';
+            
+            const steps = ['step2', 'step3', 'step4', 'step5'];
+            let currentStep = 0;
+            
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    const stepElement = document.getElementById(steps[currentStep]);
+                    stepElement.innerHTML = stepElement.innerHTML.replace('⏳', '✅');
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingDiv.style.display = 'none';
+                        // Reset
+                        steps.forEach(step => {
+                            const element = document.getElementById(step);
+                            element.innerHTML = element.innerHTML.replace('✅', '⏳');
+                        });
+                        alert('🎉 Système FluxDock Sections prêt!\n\n📋 Sections organisées\n🚀 Déplacements configurés\n✅ Validation active\n🎨 Interface moderne');
+                    }, 1000);
+                }
+            }, 800);
+        }
+
+        function generateSampleData() {
+            const sampleData = {
+                inProgress: [
+                    { vrid: 'IP001', pallets: 25, bt: 5, units: 500, priority: 'HIGH', location: 'QUAI_1' },
+                    { vrid: 'IP002', pallets: 15, bt: 3, units: 300, priority: 'MEDIUM', location: 'QUAI_2' }
+                ],
+                vrac: [
+                    { vrid: 'VR001', pallets: 12, bt: 2, units: 240, location: 'ZONE_VRAC_1' },
+                    { vrid: 'VR002', pallets: 8, bt: 1, units: 160, location: 'ZONE_VRAC_2' }
+                ],
+                palettized: [
+                    { vrid: 'PL001', pallets: 30, bt: 6, units: 600, location: 'ZONE_PALETTE_1' }
+                ],
+                done: [
+                    { vrid: 'DN001', pallets: 20, bt: 4, units: 400, location: 'STOCK_A', completedAt: new Date() }
+                ]
+            };
+
+            const jsonData = JSON.stringify(sampleData, null, 2);
+            
+            // Créer un fichier de téléchargement
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'flux-dock-sample-data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('📊 Données d\'exemple générées!\n\nFichier téléchargé : flux-dock-sample-data.json\n\n💡 Utilisez ces données pour tester les fonctionnalités de déplacement et validation.');
+        }
+
+        // Animation d'entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

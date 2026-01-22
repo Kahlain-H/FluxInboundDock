@@ -1,0 +1,24 @@
+{
+  "name": "flux-inbound-dock",
+  "version": "1.0.0",
+  "description": "Application web avec Vue.js et AG-Grid pour la gestion des données",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "vite preview --port 3000"
+  },
+  "keywords": ["vue", "ag-grid", "web-app"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "vue": "^3.3.8",
+    "ag-grid-vue3": "^31.0.0",
+    "ag-grid-community": "^31.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "vite": "^5.0.0"
+  }
+}

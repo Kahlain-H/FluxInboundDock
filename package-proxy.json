@@ -1,0 +1,18 @@
+{
+  "name": "amazon-yms-proxy",
+  "version": "1.0.0",
+  "description": "Proxy server for Amazon YMS API to bypass CORS",
+  "main": "amazon-yms-proxy.js",
+  "scripts": {
+    "start": "node amazon-yms-proxy.js",
+    "dev": "nodemon amazon-yms-proxy.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

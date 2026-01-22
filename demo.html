@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Inbound Dock - Demo</title>
+    <style>
+        /* Styles de base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        /* En-tête */
+        .main-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.9rem;
+        }
+
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .current-time {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.1);
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        /* Navigation onglets */
+        .tab-navigation {
+            background: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+        .tab-button.active {
+            color: #2c3e50;
+            border-bottom-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .tab-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Conteneurs */
+        .container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Tableau demo */
+        .demo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .demo-table th,
+        .demo-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .demo-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .demo-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Boutons */
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn-success { background-color: #27ae60; }
+        .btn-warning { background-color: #f39c12; }
+        .btn-info { background-color: #17a2b8; }
+
+        /* Status badges */
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        .status.in-progress { background-color: #3498db; }
+        .status.vrac { background-color: #f39c12; }
+        .status.palettized { background-color: #9b59b6; }
+        .status.done { background-color: #27ae60; }
+
+        /* Dashboard cards */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .card p {
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .tab-navigation {
+                padding: 0 15px;
+                overflow-x: auto;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête avec logo -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">🚢</div>
+                <h1>Flux Inbound Dock</h1>
+            </div>
+            <div class="header-info">
+                <span class="system-status">🟢 Système en ligne</span>
+                <span class="current-time" id="currentTime"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation par onglets -->
+    <nav class="tab-navigation">
+        <button class="tab-button active" onclick="showTab('flux-dock')">
+            <span class="tab-icon">🚛</span>
+            Flux_Dock_Inbound
+        </button>
+        <button class="tab-button" onclick="showTab('dashboard')">
+            <span class="tab-icon">📊</span>
+            Dashboard
+        </button>
+        <button class="tab-button" onclick="showTab('aft')">
+            <span class="tab-icon">📥</span>
+            AFT
+        </button>
+        <button class="tab-button" onclick="showTab('fmc')">
+            <span class="tab-icon">📄</span>
+            FMC
+        </button>
+        <button class="tab-button" onclick="showTab('skynet')">
+            <span class="tab-icon">🌐</span>
+            Skynet
+        </button>
+    </nav>
+
+    <!-- Contenu principal -->
+    <main class="main-content">
+        <!-- Flux Dock Inbound -->
+        <div id="flux-dock" class="tab-content active">
+            <div class="container">
+                <h2>🚛 Flux Dock Inbound - Gestion des VRID</h2>
+                
+                <!-- Barre d'outils -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+                    <div>
+                        <button class="btn btn-success">🔄 Actualiser</button>
+                        <button class="btn">📥 Import CSV</button>
+                        <button class="btn btn-warning">📤 Export</button>
+                    </div>
+                    <div>
+                        <span class="status in-progress">IN PROGRESS: 2</span>
+                        <span class="status vrac">VRAC: 1</span>
+                        <span class="status palettized">PALETTIZED: 1</span>
+                        <span class="status done">DONE: 1</span>
+                        <strong style="margin-left: 15px;">Total: 5 VRID</strong>
+                    </div>
+                </div>
+
+                <!-- Tableau des données logistiques -->
+                <table class="demo-table">
+                    <thead>
+                        <tr>
+                            <th>Statut</th>
+                            <th>VRID</th>
+                            <th>PALLETS</th>
+                            <th>BT</th>
+                            <th>UNITS</th>
+                            <th>SBD</th>
+                            <th>YMS Arrival Time</th>
+                            <th>LOCATION</th>
+                            <th>REMORQUES</th>
+                            <th>FC Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="status in-progress">🔄 IN PROGRESS</span></td>
+                            <td><strong>VR240001</strong></td>
+                            <td>24</td>
+                            <td>8</td>
+                            <td>1,200</td>
+                            <td>27/10/2024 08:30</td>
+                            <td>27/10/2024 07:45</td>
+                            <td><strong>DOCK-A1</strong></td>
+                            <td>TR-001</td>
+                            <td style="color: #e74c3c; font-weight: bold;">AFT-SYSTEM</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status vrac">📦 VRAC</span></td>
+                            <td><strong>VR240002</strong></td>
+                            <td>0</td>
+                            <td>15</td>
+                            <td>850</td>
+                            <td>27/10/2024 09:15</td>
+                            <td>27/10/2024 08:30</td>
+                            <td><strong>DOCK-B2</strong></td>
+                            <td>TR-005</td>
+                            <td style="color: #f39c12; font-weight: bold;">FMC-SYSTEM</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status palettized">🏗️ PALETTIZED</span></td>
+                            <td><strong>VR240003</strong></td>
+                            <td>18</td>
+                            <td>6</td>
+                            <td>900</td>
+                            <td>27/10/2024 10:00</td>
+                            <td>27/10/2024 09:15</td>
+                            <td><strong>DOCK-C3</strong></td>
+                            <td>TR-012</td>
+                            <td style="color: #9b59b6; font-weight: bold;">SKYNET</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status done">✅ DONE</span></td>
+                            <td><strong>VR240004</strong></td>
+                            <td>32</td>
+                            <td>10</td>
+                            <td>1,600</td>
+                            <td>27/10/2024 06:00</td>
+                            <td>27/10/2024 05:30</td>
+                            <td><strong>STOCK-Z1</strong></td>
+                            <td>TR-008</td>
+                            <td style="color: #e74c3c; font-weight: bold;">AFT-SYSTEM</td>
+                        </tr>
+                        <tr>
+                            <td><span class="status in-progress">🔄 IN PROGRESS</span></td>
+                            <td><strong>VR240005</strong></td>
+                            <td>12</td>
+                            <td>4</td>
+                            <td>600</td>
+                            <td>27/10/2024 11:30</td>
+                            <td>27/10/2024 11:00</td>
+                            <td><strong>DOCK-A2</strong></td>
+                            <td>TR-015</td>
+                            <td style="color: #f39c12; font-weight: bold;">FMC-SYSTEM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="tab-content">
+            <div class="container">
+                <h2>📊 Dashboard - Résumé Opérationnel</h2>
+                
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">🔄</div>
+                        <h3>2</h3>
+                        <p>IN PROGRESS</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📦</div>
+                        <h3>1</h3>
+                        <p>VRAC</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏗️</div>
+                        <h3>1</h3>
+                        <p>PALETTIZED</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">✅</div>
+                        <h3>1</h3>
+                        <p>DONE</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏗️</div>
+                        <h3>86</h3>
+                        <p>PALLETS TOTAL</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📋</div>
+                        <h3>43</h3>
+                        <p>BT TOTAL</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📦</div>
+                        <h3>5,150</h3>
+                        <p>UNITS TOTAL</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🚛</div>
+                        <h3>5</h3>
+                        <p>VRID ACTIFS</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🚨 VRID Prioritaires</h3>
+                    <div style="background: #fff3cd; border-left: 4px solid #f39c12; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                        <strong>🔴 VR240001</strong> - DOCK-A1 - Délai dépassé de 2h
+                    </div>
+                    <div style="background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px; margin: 10px 0; border-radius: 5px;">
+                        <strong>🟡 VR240005</strong> - DOCK-A2 - Contrôle qualité en cours
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <button class="btn" style="background: #e74c3c;">📥 Import CSV AFT</button>
+                    <button class="btn" style="background: #f39c12;">📄 Import CSV FMC</button>
+                    <button class="btn btn-info">🔄 Synchroniser</button>
+                    <button class="btn btn-success">🔃 Mettre à jour</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AFT Import -->
+        <div id="aft" class="tab-content">
+            <div class="container">
+                <h2 style="color: #e74c3c;">📥 Import AFT (Advanced Freight Transport)</h2>
+                <p>Importez les données de transport depuis le système AFT</p>
+                
+                <div style="border: 3px dashed #bdc3c7; border-radius: 10px; padding: 40px; text-align: center; margin: 20px 0; background: #f8f9fa;">
+                    <div style="font-size: 3rem; color: #e74c3c;">📁</div>
+                    <h3>Glissez votre fichier CSV AFT ici</h3>
+                    <p>ou</p>
+                    <button class="btn">Choisir un fichier</button>
+                </div>
+
+                <h3>📜 Historique des imports AFT</h3>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #e74c3c; margin: 10px 0;">
+                    <strong>aft_data_2024-10-26.csv</strong><br>
+                    <span style="color: #7f8c8d;">26/10/2024 14:30:00</span><br>
+                    <span style="color: #27ae60; font-weight: bold;">✅ 45</span>
+                    <span style="color: #e74c3c; font-weight: bold;">❌ 2</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FMC Import -->
+        <div id="fmc" class="tab-content">
+            <div class="container">
+                <h2 style="color: #f39c12;">📄 Import FMC (Freight Management Center)</h2>
+                <p>Importez les données de gestion des marchandises depuis le système FMC</p>
+                
+                <h3>📋 Templates FMC</h3>
+                <div class="cards-grid">
+                    <div class="card" style="cursor: pointer; border-left-color: #f39c12;">
+                        <div class="card-icon">📊</div>
+                        <h4>Standard FMC</h4>
+                        <p>Format standard avec VRID, location, palettes</p>
+                    </div>
+                    <div class="card" style="cursor: pointer; border-left-color: #f39c12;">
+                        <div class="card-icon">📈</div>
+                        <h4>FMC Étendu</h4>
+                        <p>Format avec informations détaillées</p>
+                    </div>
+                </div>
+
+                <h3>📊 Statistiques FMC du jour</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem;">🚛</div>
+                        <h4>127</h4>
+                        <p>VRID traités</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem;">📦</div>
+                        <h4>2,456</h4>
+                        <p>Palettes gérées</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem;">⏱️</div>
+                        <h4>12.5min</h4>
+                        <p>Temps moyen</p>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 1.5rem;">✅</div>
+                        <h4>98.2%</h4>
+                        <p>Taux de réussite</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skynet -->
+        <div id="skynet" class="tab-content">
+            <div class="container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h2>🌐 Skynet - Données en Direct</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+                    <p>Système de surveillance en temps réel</p>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 12px; height: 12px; background: #27ae60; border-radius: 50%; display: inline-block; animation: pulse 2s infinite;"></span>
+                        <span>Connecté</span>
+                        <button class="btn" style="background: rgba(255,255,255,0.2);">🔌 Déconnecter</button>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                        <div class="card-icon">🚛</div>
+                        <h3>24</h3>
+                        <p>VRID Actifs</p>
+                        <div style="color: #2ecc71; font-weight: bold;">↗️ +3</div>
+                    </div>
+                    <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                        <div class="card-icon">⚡</div>
+                        <h3>156</h3>
+                        <p>Débit/h</p>
+                        <div style="color: #2ecc71; font-weight: bold;">↗️ +12.5%</div>
+                    </div>
+                    <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                        <div class="card-icon">⏰</div>
+                        <h3>14.2min</h3>
+                        <p>Temps Moyen</p>
+                        <div style="color: #e74c3c; font-weight: bold;">↘️ -8.3%</div>
+                    </div>
+                    <div class="card" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                        <div class="card-icon">🚨</div>
+                        <h3>2</h3>
+                        <p>Alertes</p>
+                        <div style="color: #f39c12; font-weight: bold;">⚠️ Attention</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>🚨 Alertes en Cours</h3>
+                    <div style="background: rgba(231, 76, 60, 0.2); border-left: 4px solid #e74c3c; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                        <strong>🔴 Délai dépassé</strong><br>
+                        VRID VR240001 dépasse le délai prévu de 2 heures<br>
+                        <small>il y a 15min</small>
+                    </div>
+                    <div style="background: rgba(243, 156, 18, 0.2); border-left: 4px solid #f39c12; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                        <strong>🟡 Capacité dock</strong><br>
+                        DOCK-A1 approche de la capacité maximale<br>
+                        <small>il y a 8min</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Mise à jour de l'heure
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('fr-FR');
+        }
+        
+        // Changement d'onglets
+        function showTab(tabId) {
+            // Cacher tous les onglets
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Désactiver tous les boutons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Afficher l'onglet sélectionné
+            document.getElementById(tabId).classList.add('active');
+            
+            // Activer le bouton correspondant
+            event.target.classList.add('active');
+        }
+        
+        // Initialisation
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Animation pulse pour Skynet
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('🚢 Flux Inbound Dock Demo - Version HTML statique');
+        console.log('📊 Interface logistique complète prête !');
+    </script>
+</body>
+</html>
