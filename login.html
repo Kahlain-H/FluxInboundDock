@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BVA1 Inbound Dock - Authentification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 450px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .logo-section img {
+            max-width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-section h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: 0.95;
+            font-weight: 300;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .form-section {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .remember-me input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #fadbd8;
+            border-left: 4px solid #e74c3c;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .info-footer {
+            background-color: #f8f9fa;
+            padding: 15px 40px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .info-footer strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .info-footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .info-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <img src="src/assets/logo-bva1.png" alt="Logo BVA1">
+            <h1>BVA1 Inbound Dock</h1>
+            <p class="tagline">Suivi intelligent et optimisé des opérations d'inbound dock - Équipe en temps réel</p>
+        </div>
+
+        <div class="form-section">
+            <div class="error-message" id="errorMessage">❌ Mot de passe incorrect. Veuillez réessayer.</div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Mot de passe d'accès :</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Entrez le mot de passe"
+                        autofocus
+                    >
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe" style="margin-bottom: 0;">Se souvenir de moi</label>
+                </div>
+
+                <button type="submit" class="submit-btn">Accéder au Dock</button>
+            </form>
+        </div>
+
+        <div class="info-footer">
+            <strong>Pour les accès :</strong>
+            Contactez <strong>kahlh</strong> 📧
+        </div>
+    </div>
+
+    <script>
+        const PASSWORD = 'BVA1DockInbound2026@';
+        const REDIRECT_URL = 'index.html';
+        const REMEMBER_KEY = 'bva1_dock_authenticated';
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const passwordInput = document.getElementById('password');
+            const password = passwordInput.value;
+            const errorMessage = document.getElementById('errorMessage');
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (password === PASSWORD) {
+                // Authentification réussie
+                if (rememberMe) {
+                    localStorage.setItem(REMEMBER_KEY, 'true');
+                    localStorage.setItem(REMEMBER_KEY + '_time', new Date().getTime());
+                }
+                
+                // Rediriger vers index.html
+                window.location.href = REDIRECT_URL;
+            } else {
+                // Authentification échouée
+                errorMessage.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // Masquer le message après 3 secondes
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Vérifier si l'utilisateur est déjà authentifié (au chargement)
+        window.addEventListener('load', function() {
+            if (localStorage.getItem(REMEMBER_KEY) === 'true') {
+                // Vérifier que le token n'est pas expiré (24 heures)
+                const savedTime = parseInt(localStorage.getItem(REMEMBER_KEY + '_time'));
+                const now = new Date().getTime();
+                const dayInMs = 24 * 60 * 60 * 1000;
+
+                if (now - savedTime < dayInMs) {
+                    // Rediriger automatiquement
+                    window.location.href = REDIRECT_URL;
+                } else {
+                    // Token expiré, nettoyer
+                    localStorage.removeItem(REMEMBER_KEY);
+                    localStorage.removeItem(REMEMBER_KEY + '_time');
+                }
+            }
+        });
+
+        // Permettre l'entrée du mot de passe au clavier Entrée
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,8 +1,11 @@
-# 🚢 Flux Inbound Dock
+# 🚢 BVA1 Inbound Dock
 
-**Système de gestion logistique moderne avec interface web complète**
+**Suivi intelligent et optimisé des opérations d'inbound dock - Équipe en temps réel**
 
-Une application web avancée pour la gestion des opérations logistiques avec Vue.js et AG-Grid, incluant 5 modules spécialisés.
+Système de gestion logistique moderne développé pour l'équipe Inbound Dock de BVA1. Application web avancée pour la gestion des opérations logistiques avec Vue.js et AG-Grid, incluant 5 modules spécialisés.
+
+> 🔐 **Outil Personnel - Accès Restreint**  
+> Pour demander l'accès, veuillez contacter : **kahlh**
 
 ## 🏗️ Architecture du Système
 
@@ -176,17 +179,37 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 - [Documentation AG-Grid](https://www.ag-grid.com/vue-data-grid/)
 - [Documentation Vite](https://vitejs.dev/)
 
+## 🌐 Accès en Ligne
+
+**Le site est accessible en ligne via GitHub Pages** 🎉
+
+→ [Lancer BVA1 Inbound Dock](https://votreusername.github.io/FluxInboundDock/)
+
+⚠️ Identifiez-vous avec le mot de passe fourni par l'équipe.
+
+## 🔐 Authentification
+
+À la première visite, vous serez invité à entrer le mot de passe d'accès. L'application propose une option "Se souvenir de moi" qui valide votre session pendant 24 heures.
+
+## 🤝 Équipe Inbound Dock
+
+**Outil développé pour :** Équipe Inbound Dock BVA1  
+**Point de contact :** kahlh  
+**Type :** Outil interne - Accès restreint
+
 ## 🤝 Contribution
 
-1. Forkez le projet
-2. Créez une branche pour votre fonctionnalité
-3. Committez vos changements
-4. Poussez vers la branche
-5. Ouvrez une Pull Request
+Pour toute modification ou amélioration :
+
+1. Contactez **kahlh**
+2. Décrivez votre demande/amélioration
+3. Proposez les changements
+4. Testez en local avant de pusher
 
 ## 📄 Licence
 
-Ce projet est sous licence MIT - voir le fichier LICENSE pour les détails.
+Ce projet est propriétaire et réservé à l'équipe BVA1 Inbound Dock.
+
 
 ---
 
