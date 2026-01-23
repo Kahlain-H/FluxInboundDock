@@ -8,39 +8,24 @@
 <body>
     <div id="app"></div>
     <script type="module">
-        // Vérifier l'authentification avant de charger l'app
+        // Vérifier l'authentification
         const REMEMBER_KEY = 'bva1_dock_authenticated';
         
-        function checkAuthentication() {
-            if (localStorage.getItem(REMEMBER_KEY) !== 'true') {
-                // Non authentifié, rediriger vers login
-                window.location.href = './login.html';
-                return false;
-            }
-            
-            // Vérifier que le token n'est pas expiré (24 heures)
+        if (localStorage.getItem(REMEMBER_KEY) !== 'true') {
+            window.location.href = './login.html';
+        } else {
             const savedTime = parseInt(localStorage.getItem(REMEMBER_KEY + '_time'));
             const now = new Date().getTime();
             const dayInMs = 24 * 60 * 60 * 1000;
 
             if (now - savedTime >= dayInMs) {
-                // Token expiré
                 localStorage.removeItem(REMEMBER_KEY);
                 localStorage.removeItem(REMEMBER_KEY + '_time');
                 window.location.href = './login.html';
-                return false;
+            } else {
+                // Charger l'app Vue
+                import('/FluxInboundDock/assets/index-DFxoU5Oz.js');
             }
-            
-            return true;
-        }
-
-        if (checkAuthentication()) {
-            // Charger l'app Vue
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.crossOrigin = 'anonymous';
-            script.src = '/FluxInboundDock/assets/index-DFxoU5Oz.js';
-            document.head.appendChild(script);
         }
     </script>
 </body>
